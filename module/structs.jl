@@ -53,16 +53,17 @@ mutable struct Population
     generation::Int64
 end
 
-mutable struct Tracker
-    initial_generation::Int64
-    final_generation::Int64
-    group_cooperation::Array{Float64, 2}
-    group_frequencies::Array{Float64, 2}
-    group_reputations::Array{Float64, 2}
-    group_avg_fitness::Array{Float64, 2}
-    global_cooperation::Float64
-    population_path::String
-end
+# mutable struct Tracker
+#     initial_generation::Int64
+#     final_generation::Int64
+#     group_cooperation::Array{Float64, 2}
+#     group_frequencies::Array{Float64, 2}
+#     group_reputations::Array{Float64, 2}
+#     group_avg_fitness::Array{Float64, 2}
+#     global_cooperation::Float64
+#     population_path::String
+# end
+
 mutable struct Tracker
 
     initial_generation::Int64          # initial generation of the corresponding simulation run 
