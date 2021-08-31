@@ -34,12 +34,12 @@ mutable struct Population
     group_sizes::Array{Int64, 1}        # array of group sizes
     # Individual reputations
     ind_reps_type::Bool                 # individual reputation type: public or private
-    ind_reps_base::Array{Bool, 1}       # individuals reps are based on behavior or not
-    ind_reps_src::Array{Bool, 1}        # update individual reps based on individual or group reputation
+    ind_reps_base::Array{Bool, 1}       # individuals reps are based on behavior (1) or not (0)
+    ind_reps_src::Array{Bool, 1}        # update individual reps based on individual (0) or group (1) reputation
     # Group reputations
     grp_reps_type::Bool                 # group reputation type: public or private
-    grp_reps_base::Array{Bool, 1}       # group reps are based on behavior or not
-    grp_reps_src::Array{Bool, 1}        # update group reps based on individual or group reputation
+    grp_reps_base::Array{Bool, 1}       # group reps are based on behavior (1) or not (0)
+    grp_reps_src::Array{Bool, 1}        # update group reps based on individual (0) or group (1) reputation
     threshold::Float64                  # coupled with rates of updating
     # Storage
     strategies::Array{Int64, 1}         # array of strategies
