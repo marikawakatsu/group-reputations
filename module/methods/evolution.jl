@@ -5,7 +5,7 @@
 #
 """
 Action
-    Returns action given: 
+    Returns action given:
     - Donor's strategy
     - Recipient's reputation
 """
@@ -64,7 +64,7 @@ function _ind_reputation(
         a = pop.actions[j,k]
         # Individual or Group reputation of the recipient
         l = pop.membership[k]
-        r = pop.ind_reps_src[i] ? pop.prev_reps_ind[i,k] : pop.prev_reps_grp[i,l]
+        r = pop.ind_reps_src_ind[i] ? pop.prev_reps_ind[i,k] : pop.prev_reps_grp[i,l]
         # Assessment
         return _norm( a, r, pop.norm)
 
@@ -98,7 +98,7 @@ function _grp_reputation(
         a = pop.actions[j,k]
         # Group or Individual reputation of the recipient
         l = pop.membership[k]
-        r = pop.grp_reps_src[i] ? pop.prev_reps_grp[i,l] : pop.prev_reps_ind[i,k]
+        r = pop.grp_reps_src_grp[i] ? pop.prev_reps_grp[i,l] : pop.prev_reps_ind[i,k]
         # Assessment
         return _norm( a, r, pop.norm)
 
@@ -120,8 +120,20 @@ function update_individual_reputations!(
     # Timestep
     pop.prev_reps_ind = pop.reps_ind |> deepcopy
     pop.reps_ind .= 0
+    # Public
+    if pop.ind_reps_public
+        for j in 1:pop.N
+            # Random observer
+            i = 1:pop.N |> sample
+            # Individual reputation
+            r = _ind_reputation(pop,i,j)
+            # Assignment error
+            rand() < pop.game.u_a && (r = 1-r)
+            # Broadcast
+            pop.reps_ind[:,j] .= r
+        end
     # Private
-    if pop.ind_reps_type
+    else
         for i in 1:pop.N, j in i:pop.N
             # Both views
             r_ij = _ind_reputation(pop,i,j)
@@ -132,18 +144,6 @@ function update_individual_reputations!(
             # Update
             pop.reps_ind[i,j] = r_ij
             pop.reps_ind[j,i] = r_ji
-        end
-    # Public
-    else
-        for j in 1:pop.N
-            # Random observer
-            i = 1:pop.N |> sample
-            # Individual reputation
-            r = _ind_reputation(pop,i,j)
-            # Assignment error
-            rand() < pop.game.u_a && (r = 1-r)
-            # Broadcast
-            pop.reps_ind[:,j] .= r
         end
     end
 end
@@ -159,20 +159,8 @@ function update_group_reputations!(
     # Update timestep
     pop.prev_reps_grp = pop.reps_grp |> deepcopy
     pop.reps_grp .= 0
-    # Private
-    if pop.grp_reps_type
-        for i in 1:pop.N, g in 1:pop.num_groups
-            # Reputation of j in eyes of i
-            r = _grp_reputation(pop,i,g)
-            # Assignment error
-            rand() < pop.game.u_a && (r = 1-r)
-            # Rate of updating
-            r = pop.rates[i] * r + (1-pop.rates[i]) * pop.prev_reps_grp[i,g]
-            # Update
-            pop.reps_grp[i,g] = Int(r >= pop.threshold)
-        end
     # Public
-    else
+    if pop.grp_reps_public
         for g in 1:pop.num_groups
             # Random observer
             i = 1:pop.N |> sample
@@ -184,6 +172,18 @@ function update_group_reputations!(
             r = pop.rates[i] * r + (1-pop.rates[i]) * pop.prev_reps_grp[i,g]
             # Update broadcast
             pop.reps_grp[:,g] .= Int(r >= pop.threshold)
+        end
+    # Private
+    else
+        for i in 1:pop.N, g in 1:pop.num_groups
+            # Reputation of j in eyes of i
+            r = _grp_reputation(pop,i,g)
+            # Assignment error
+            rand() < pop.game.u_a && (r = 1-r)
+            # Rate of updating
+            r = pop.rates[i] * r + (1-pop.rates[i]) * pop.prev_reps_grp[i,g]
+            # Update
+            pop.reps_grp[i,g] = Int(r >= pop.threshold)
         end
     end
 end
