@@ -10,10 +10,10 @@ function random_population(
     prob::Float64 = 0.5,
     rate::Float64 = 1.0,
     group_sizes::Array{Int64, 1} = [25, 25],
-    ind_reps_public::Bool = false,    # public
-    grp_reps_public::Bool = false,    # public
-    ind_reps_base_fix::Bool = true, # based on behavior
-    grp_reps_base_fix::Bool = true, # based on behavior
+    ind_reps_public::Bool = false,      # public
+    grp_reps_public::Bool = false,      # public
+    ind_reps_base_fix::Bool = true,     # based on behavior
+    grp_reps_base_fix::Bool = true,     # based on behavior
     ind_reps_src_ind_fix::Bool = true,  # based on ind rep
     grp_reps_src_grp_fix::Bool = true,  # based on grp rep
     num_strategies::Int64 = 3,
@@ -57,8 +57,8 @@ function random_population(
         N, game, norm,
         num_strategies, all_strategies,
         num_groups, all_groups, group_sizes,
-        ind_reps_public, ind_reps_base, ind_reps_src,
-        grp_reps_public, grp_reps_base, grp_reps_src, 
+        ind_reps_public, ind_reps_base, ind_reps_src_ind,
+        grp_reps_public, grp_reps_base, grp_reps_src_grp, 
         threshold, strategies, membership, 
         reps_ind, reps_grp,
         prev_reps_ind, prev_reps_grp, 

@@ -22,6 +22,8 @@ module GroupReputations
     export _ind_reputation, _grp_reputation
     export _norm, _action
 
+    include("./module/methods/simulation.jl")
+    export random_population
     ### !!! ADD OTHER FUNCTIONS HERE !!! ###
 
     # variables
