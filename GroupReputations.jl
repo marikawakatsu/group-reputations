@@ -2,10 +2,10 @@ module GroupReputations
 
     #include("./module/requirements.jl")
     using Random, StatsBase, Statistics
-    using Base.Iterators: product, take
+    #using Base.Iterators: product, take
     using JLD, Distributed
     using SharedArrays, CSV, DataFrames
-    using StatsPlots, Plots
+    #using StatsPlots, Plots
 
     # functions
     include("./module/structs.jl")
@@ -28,8 +28,8 @@ module GroupReputations
 
     # variables
     const parameters_game = ["weak_selection","medium_selection","strong_selection"]
-    const norms = ["SJ", "SS", "SC", "SH"]
+    const social_norms = ["SJ", "SS", "SC", "SH"]
     export parameters_game
-    export norms
+    export social_norms
 
 end
