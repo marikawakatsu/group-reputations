@@ -5,7 +5,9 @@
 #
 """
 Action
-    Unconditional and Conditional
+    Returns action given: 
+    - Donor's strategy
+    - Recipient's reputation
 """
 function _action(
     strategy::Int64,
@@ -154,7 +156,7 @@ Update Group Reputations
 function update_group_reputations!(
     pop::Population
     )
-    # Timestep
+    # Update timestep
     pop.prev_reps_grp = pop.reps_grp |> deepcopy
     pop.reps_grp .= 0
     # Private
@@ -245,7 +247,7 @@ function update_strategies!(
     # Compute probability of imitation
     p = 1. / (1. + exp(-pop.game.w*(pop.fitness[j]-pop.fitness[i])))
     # Update strategy
-    rand()<p && (pop.strategies[i]=pop.strategies[j])
+    rand() < p && (pop.strategies[i]=pop.strategies[j])
 end
 
 """
@@ -254,7 +256,7 @@ Random Independent Mutation
 function mutate!(
     pop::Population
     )
-    # Mutate with probability u_s
+    # Mutate (ie adopt a random strategy) with probability u_s
     rand() < pop.game.u_s && (pop.strategies[ sample(1:pop.N) ] = sample(pop.all_strategies))
 end
 
