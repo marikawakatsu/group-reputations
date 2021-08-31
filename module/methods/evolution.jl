@@ -228,9 +228,9 @@ function update_fitness!(
     )
     for i in 1:pop.N
         # Cost of cooperating
-        cost = pop.game.c * sum(pop.actions[i,:])
+        cost = pop.game.c * sum(pop.actions[i,:])/pop.N
         # Received benefit
-        benefit = pop.game.b * sum(pop.actions[:,i])
+        benefit = pop.game.b * sum(pop.actions[:,i])/pop.N
         # Update fitness
         pop.fitness[i] = benefit - cost
     end
