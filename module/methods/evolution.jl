@@ -91,7 +91,7 @@ function _grp_reputation(
     # Based on behavior
     if pop.grp_reps_base[i]
         # Random donor from the group
-        j = pop.membership .== g |> findall |> sample
+        j = (pop.membership .== g) |> findall |> sample
         # Random recipient
         k = 1:pop.N |> sample
         # Action of the donor
