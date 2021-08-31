@@ -27,45 +27,34 @@ mutable struct Population
     norm::String                        # social norm for reps updating
     # Strategies
     num_strategies::Int64               # number of strategies
-    all_strategies::Array{Int64, 1}     # allowed strategies
+    all_strategies::Array{Int64, 1}     # array of allowed strategies
     # Groups
     num_groups::Int64                   # number of groups
-    all_groups::Array{Int64, 1}         # allowed groups
-    group_sizes::Array{Int64, 1}        # size of each group
+    all_groups::Array{Int64, 1}         # array of allowed groups
+    group_sizes::Array{Int64, 1}        # array of group sizes
     # Individual reputations
-    ind_reps_type::Bool                 # public or private
-    ind_reps_base::Array{Bool, 1}       # based on behavior or not
-    ind_reps_src::Array{Bool, 1}        # use RI or RG for updating
+    ind_reps_type::Bool                 # individual reputation type: public or private
+    ind_reps_base::Array{Bool, 1}       # individuals reps are based on behavior or not
+    ind_reps_src::Array{Bool, 1}        # update individual reps based on individual or group reputation
     # Group reputations
-    grp_reps_type::Bool                 # public or private
-    grp_reps_base::Array{Bool, 1}       # based on behavior or not
-    grp_reps_src::Array{Bool, 1}        # use RI or RG for updating
+    grp_reps_type::Bool                 # group reputation type: public or private
+    grp_reps_base::Array{Bool, 1}       # group reps are based on behavior or not
+    grp_reps_src::Array{Bool, 1}        # update group reps based on individual or group reputation
     threshold::Float64                  # coupled with rates of updating
     # Storage
-    strategies::Array{Int64, 1}         # strategies
-    membership::Array{Int64, 1}         # group membership
-    reps_ind::Array{Int64, 2}           # individual reputations
-    reps_grp::Array{Int64, 2}           # group reputations
-    prev_reps_ind::Array{Int64, 2}      # previous individual reputations
-    prev_reps_grp::Array{Int64, 2}      # previous group reputations
-    actions::Array{Int64, 2}            # actions
-    fitness::Array{Float64, 1}        # fitness
-    probs::Array{Float64, 1}            # probs of acting using individual reps
-    rates::Array{Float64, 1}            # rate of updating group reps
+    strategies::Array{Int64, 1}         # array of strategies
+    membership::Array{Int64, 1}         # array of group memberships
+    reps_ind::Array{Int64, 2}           # matrix of individual reputations
+    reps_grp::Array{Int64, 2}           # matrix of group reputations
+    prev_reps_ind::Array{Int64, 2}      # matrix of previous individual reputations
+    prev_reps_grp::Array{Int64, 2}      # matrix of previous group reputations
+    actions::Array{Int64, 2}            # matrix of actions
+    fitness::Array{Float64, 1}          # array of fitness
+    probs::Array{Float64, 1}            # array of probs of acting using individual reps
+    rates::Array{Float64, 1}            # array of rates of updating group reps
     # Current generation
     generation::Int64
 end
-
-# mutable struct Tracker
-#     initial_generation::Int64
-#     final_generation::Int64
-#     group_cooperation::Array{Float64, 2}
-#     group_frequencies::Array{Float64, 2}
-#     group_reputations::Array{Float64, 2}
-#     group_avg_fitness::Array{Float64, 2}
-#     global_cooperation::Float64
-#     population_path::String
-# end
 
 mutable struct Tracker
 
