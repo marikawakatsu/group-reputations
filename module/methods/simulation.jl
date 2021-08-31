@@ -87,6 +87,14 @@ function random_population(
     prev_reps_ind       = sample_parameters((N, N))
     reps_grp            = sample_parameters((N, num_groups))
     prev_reps_grp       = sample_parameters((N, num_groups))
+    if ind_reps_public
+        for j in 1:N reps_ind[:,j] .= reps_ind[1,j] end
+        for j in 1:N prev_reps_ind[:,j] .= prev_reps_ind[1,j] end
+    end
+    if grp_reps_public
+        for j in 1:num_groups reps_grp[:,j] .= reps_grp[1,j] end
+        for j in 1:num_groups prev_reps_grp[:,j] .= prev_reps_grp[1,j] end
+    end
     actions             = sample_parameters((N, N))
     fitness             = sample_parameters( N, 0.0)
     # Set generation count
