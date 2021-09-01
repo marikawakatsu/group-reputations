@@ -26,6 +26,9 @@ module GroupReputations
     export random_population
     ### !!! ADD OTHER FUNCTIONS HERE !!! ###
 
+    include("./module/methods/tracker.jl")
+    export _report
+
     # variables
     const parameters_game = ["weak_selection","medium_selection","strong_selection"]
     const social_norms = ["SJ", "SS", "SC", "SH"]
