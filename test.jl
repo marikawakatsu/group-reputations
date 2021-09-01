@@ -6,9 +6,10 @@ begin
     using Revise
     using GroupReputations
     using StatsBase
+    using Distributed, JLD
 end
 
-# Set parameters
+# Fixed parameters
 begin
     # Population size
     const N    = 50
@@ -16,55 +17,48 @@ begin
     const b    = 1.0
     const c    = 0.2
     # Selection strength
-    const simulation_title = "strong_selection"   # "weak_selection"
-    const w    = 0.1     # 0.01
+    const w    = 1
     # Mutation rates
-    const u_s  = 0.1/N
-    const u_p  = 0.1/N
-    const u_a  = 0.1/N
+    const u_s  = 1/N
+    const u_p  = 1/N
+    const u_a  = 1/N
     # Game parameters
     const game_pars = [b, c, w, u_s, u_p, u_a]
 end
 
-# General conditions
-N
-game = Game(game_pars...)
-pop = random_population(N,game)
-
-# Test random_population
-# Default population:
-#   - Three strategies
-#   - Two groups of sizes ~ [0.5,0.5]
-#   - Public individual and public group reputations
-#   - Randomly use individual or group (fixed value of p=0.5)
-#   - Update reputations every round (fixed value of λ=1.0 )
-#   - Individual and group reputations based on behavior
-#   - Both individual and group reps using individual previous reps as source
-pop = random_population(N,game)
-
-# Changing variables
-# Example:
-#   - Private individual and group reputations
-#   - Three groups with different sizes
-#   - Individuals that use only individual, only group and randomly both reps
-#   - Half of individuals update every round and other half do not update
+# Simulation parameters to sweep
 begin
-    pop = random_population(
-        N,
-        game,
-        ind_reps_public = false,
-        grp_reps_public = false,
-        group_sizes = [0.25, 0.25, 0.5],
-        prob_values = [0.0, 0.5, 1.0],
-        prob_weights = [0.5, 0.25, 0.25],
-        rate_values = [0.0, 1.0],
-        rate_weights = [0.5, 0.5]
-        )
-
-    dict = proportionmap(pop.probs)
-    "Sampled values: " |> print
-    dict |> keys |> collect |> println
-
-    "Sampled proportion: " |> print
-    dict |> values |> collect |> println
+    # Strategies and groups
+    all_strategies = [1,2,3]
+    group_sizes = [0.5, 0.5]
+    # Reputation type
+    ind_reps_public = true
+    grp_reps_public = true
+    # Based or not on behavior
+    ind_reps_base_values = [false,true]
+    grp_reps_base_values = [false,true]
+    # Probability of using individual reps
+    prob_values = 0.0:0.2:1.0
+    # Rate of updating reps
+    rate_values = 0.0:0.2:1.0
+    # Initial generations without averaging
+    burn_in = 0
+    # Repetitions and length
+    repetitions = 1
+    initial_repetition = 0
+    generations = 10_000
+    # Title
+    simulation_title = "fixed_prob-rate"
 end
+
+
+@time run_simulations(
+        N, game_pars, generations,
+        repetitions, initial_repetition,
+        simulation_title, social_norms,
+        all_strategies, group_sizes,
+        ind_reps_public, grp_reps_public,
+        ind_reps_base_values, grp_reps_base_values,
+        prob_values, rate_values,
+        burn_in
+        )
