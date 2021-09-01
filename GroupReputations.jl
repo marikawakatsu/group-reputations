@@ -1,9 +1,9 @@
 module GroupReputations
 
     #include("./module/requirements.jl")
+    using Distributed
     using Random, StatsBase, Statistics
-    using JLD, Distributed
-    using SharedArrays, CSV, DataFrames
+    using JLD, DataFrames, CSV
 
     # functions
     include("./module/structs.jl")
@@ -23,6 +23,9 @@ module GroupReputations
     include("./module/methods/simulation.jl")
     export random_population
     export run_simulations
+
+    include("./module/methods/extractor.jl")
+    export extract_data
     ### !!! ADD OTHER FUNCTIONS HERE !!! ###
 
     include("./module/methods/tracker.jl")
