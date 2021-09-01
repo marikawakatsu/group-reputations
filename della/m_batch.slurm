@@ -7,8 +7,8 @@
 #SBATCH --time=6:00:00
 #SBATCH --mail-type=all
 #SBATCH --mail-user=mk28@princeton.edu
-#SBATCH --array=0-9
-#SBATCH --output=della/della_%A_%a.out
+#SBATCH --array=1-6
+#SBATCH --output=della/della-%A-%a.out
 
 echo "My SLURM_ARRAY_JOB_ID is $SLURM_ARRAY_JOB_ID."
 echo "My SLURM_ARRAY_TASK_ID is $SLURM_ARRAY_TASK_ID"
@@ -18,4 +18,4 @@ module purge
 module load julia/1.5.0
 module list
 
-julia fixed_probs-rates.jl
+julia m_sweep-src-prob-rate.jl
