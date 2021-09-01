@@ -47,16 +47,15 @@ with randomized strategies and reputations
 function random_population(
     N::Int64,
     game::Game,
-    norm::String = "SJ";
-    ind_reps_public::Bool = true,      # public
-    grp_reps_public::Bool = true,      # public
-    all_strategies::Array{Int64,1} = [1,2,3],
-    threshold::Float64 = 0.5,
+    norm = "SJ",
+    all_strategies = [1,2,3],
     group_sizes = [0.5, 0.5],
-    prob_values = 0.5,
-    rate_values = 1.0,
+    ind_reps_public = true,      # public
+    grp_reps_public = true,      # public
     ind_reps_base_values = true,     # based on behavior
     grp_reps_base_values = true,     # based on behavior
+    prob_values = 0.5,
+    rate_values = 1.0,
     ind_reps_src_ind_values = true,  # based on ind rep
     grp_reps_src_grp_values = false,  # based on ind rep
     prob_weights = [0.5, 0.5],
@@ -65,6 +64,7 @@ function random_population(
     grp_reps_base_weights = [0.5,0.5],
     ind_reps_src_ind_weights = [0.5,0.5],
     grp_reps_src_grp_weights = [0.5,0.5],
+    threshold = 0.5
     )
     # Strategies
     num_strategies      = length(all_strategies)
@@ -88,15 +88,15 @@ function random_population(
     reps_grp            = sample_parameters((N, num_groups))
     prev_reps_grp       = sample_parameters((N, num_groups))
     if ind_reps_public
-        for j in 1:N 
-            reps_ind[:,j] .= reps_ind[1,j] 
-            prev_reps_ind[:,j] .= prev_reps_ind[1,j] 
+        for j in 1:N
+            reps_ind[:,j] .= reps_ind[1,j]
+            prev_reps_ind[:,j] .= prev_reps_ind[1,j]
         end
     end
-    if grp_reps_public 
-        for j in 1:num_groups 
+    if grp_reps_public
+        for j in 1:num_groups
             reps_grp[:,j] .= reps_grp[1,j]
-            prev_reps_grp[:,j] .= prev_reps_grp[1,j] 
+            prev_reps_grp[:,j] .= prev_reps_grp[1,j]
         end
     end
     actions             = sample_parameters((N, N))
@@ -116,4 +116,92 @@ function random_population(
         actions, fitness,
         probs, rates, generation
         )
+end
+
+"""
+Run simulations in parallel.
+Sweeping parameters:
+    - social norms
+    - reputation public or private
+    - reputation based or nor on behavior
+    - probability of using individual over group reputations
+    - rate of reputation updating
+"""
+function run_simulations(
+            N::Int64,
+            game_pars::Vector,
+            generations::Int64,
+            repetitions::Int64,
+            initial_repetition::Int64,
+            simulation_title::String,
+            social_norms = "SJ",
+            all_strategies = [1,2,3],
+            group_sizes = [0.5, 0.5],
+            ind_reps_public = true,
+            grp_reps_public = true,
+            ind_reps_base_values = true,
+            grp_reps_base_values = true,
+            prob_values = 0.5,
+            rate_values = 1.0,
+            burn_in = 5_000
+        )
+
+
+    reps = initial_repetition:(initial_repetition+repetitions-1)
+    index = [ (r,norm,ir,gr,ib,gb,prob,rate) for  r in reps,
+                                                norm in [social_norms...],
+                                                ir in [ind_reps_public...],
+                                                gr in [grp_reps_public...],
+                                                ib in [ind_reps_base_values...],
+                                                gb in [grp_reps_base_values...],
+                                                prob in [prob_values...],
+                                                rate in [rate_values...]][:]
+
+    @sync @distributed for i in index
+        (r,norm,ir,gr,ib,gb,prob,rate) = i
+        path  = "results/"*
+                "$simulation_title/"*
+                "norm$norm-"*
+                "type$(Int(ir))$(Int(gr))-"*
+                "base$(Int(ib))$(Int(gb))-"*
+                "prob$prob-rate$rate"
+        !ispath(path) && mkpath(path)
+        # Files
+        pop_file = path * "/pop_$r.jld"
+        # TODO: tracker_file = path * "/tracker_$r.jld"
+        # Get population and tracker
+        if !isfile(pop_file)
+            # Get Game
+            game = Game(game_pars...)
+            # Get Population
+            pop  = random_population( N, game, norm, all_strategies, group_sizes,
+                                    ir, gr, ib, gb, prob, rate)
+            # Burn in generations
+            [ evolve!(pop) for _ in burn_in ]
+            pop.generation = 0
+            # Get Tracker
+            # TODO: tracker = init_tracker(pop, generations)
+        else
+            # if population exists, load it
+            pop = load(pop_file,"pop")
+            # load tracker for expanding simulation
+            tracker = load(tracker_file,"tracker")
+        end
+        # Relate population with tracker
+        # TODO: tracker.population_path = pop_file
+        # if generations not reached
+        if pop.generation < generations
+            # Run generations
+            for gen in 1:(generations-pop.generation)
+                # evolve
+                evolve!(pop)
+                # update tracker
+                # TODO: track!(tracker,pop)
+            end
+        end
+        # Save Population
+        save(pop_file, "pop", pop)
+        # Save Tracker
+        # TODO: save(tracker_file, "tracker", tracker)
+    end
 end

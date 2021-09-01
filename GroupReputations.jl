@@ -2,10 +2,8 @@ module GroupReputations
 
     #include("./module/requirements.jl")
     using Random, StatsBase, Statistics
-    #using Base.Iterators: product, take
     using JLD, Distributed
     using SharedArrays, CSV, DataFrames
-    #using StatsPlots, Plots
 
     # functions
     include("./module/structs.jl")
@@ -24,6 +22,7 @@ module GroupReputations
 
     include("./module/methods/simulation.jl")
     export random_population
+    export run_simulations
     ### !!! ADD OTHER FUNCTIONS HERE !!! ###
 
     include("./module/methods/tracker.jl")
