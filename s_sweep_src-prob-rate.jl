@@ -68,6 +68,6 @@ end
         )
 "DONE!" |> println
 
-"extracting data..." |> println
-extract_data(simulation_title)
-"...done!" |> println
+# "extracting data..." |> println
+# extract_data(simulation_title)
+# "...done!" |> println
