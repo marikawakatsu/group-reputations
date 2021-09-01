@@ -26,7 +26,19 @@ module GroupReputations
     ### !!! ADD OTHER FUNCTIONS HERE !!! ###
 
     include("./module/methods/tracker.jl")
+    export init_tracker
+    export track!
+    export _merge
     export _report
+
+    include("./module/methods/get_functions.jl")
+    export _round
+    export get_cooperation
+    export get_frequencies
+    export get_reps_ind
+    export get_reps_grp
+    export get_stereotypes
+    export get_avg_fitness
 
     # variables
     const parameters_game = ["weak_selection","medium_selection","strong_selection"]

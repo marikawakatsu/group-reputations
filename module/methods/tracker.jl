@@ -92,17 +92,29 @@ end
 """
 Merge a list of trackers
 """
+function _merge(
+    trackers_list::Vector
+    )
 
-# mutable struct Tracker
+    trackers = sort(trackers_list, by = (x)->x.initial_generation )
 
-#     initial_generation::Int64          # initial generation of the corresponding simulation run
-#     final_generation::Int64            # final generation of the corresponding simulation run
-#     avg_cooperation::Array{Float64, 2} # a num_groups-by-num_groups matrix tracking average within- and between-group cooperation
-#     avg_frequencies::Array{Float64, 2} # a num_groups-by-num_strategies matrix tracking average strategy frequencies per group
-#     avg_reps_grp::Array{Float64, 1}    # a num_groups-element array tracking average group reputations
-#     avg_reps_ind::Array{Float64, 1}    # a num_groups-element array tracking average individual reputations per group
-#     avg_fitness::Array{Float64, 2}     # a num_groups-by-num_strategies matrix tracking average fitness of each strategy per group
-#     avg_global_cooperation::Float64    # a float tracking average global cooperation
-#     population_path::String            # path to the stored population
+    initial_generation = first(trackers).initial_generation
+    final_generation   = last(trackers).final_generation
+    avg_cooperation    = vcat(( (x)-> x.avg_cooperation ).( trackers )...)
+    avg_frequencies    = vcat(( (x)-> x.avg_frequencies ).( trackers )...)
+    avg_fitness        = sum(( (x)-> x.avg_fitness*(1+x.final_generation-x.initial_generation) ).( trackers )) / final_generation
+    avg_reps_ind       = sum(( (x)-> x.avg_reps_ind*(1+x.final_generation-x.initial_generation) ).( trackers )) / final_generation
+    avg_reps_grp       = sum(( (x)-> x.avg_reps_grp*(1+x.final_generation-x.initial_generation) ).( trackers )) / final_generation
+    population_path    = first(trackers).population_path
 
-# end
+    return Tracker( initial_generation,
+                    final_generation,
+                    avg_cooperation,
+                    avg_frequencies,
+                    avg_reps_grp,
+                    avg_reps_ind,
+                    avg_fitness,
+                    avg_global_cooperation,
+                    population_path
+                )
+end

@@ -168,7 +168,7 @@ function run_simulations(
         !ispath(path) && mkpath(path)
         # Files
         pop_file = path * "/pop_$r.jld"
-        # TODO: tracker_file = path * "/tracker_$r.jld"
+        tracker_file = path * "/tracker_$r.jld"
         # Get population and tracker
         if !isfile(pop_file)
             # Get Game
@@ -180,7 +180,7 @@ function run_simulations(
             [ evolve!(pop) for _ in burn_in ]
             pop.generation = 0
             # Get Tracker
-            # TODO: tracker = init_tracker(pop, generations)
+            tracker = init_tracker(pop)
         else
             # if population exists, load it
             pop = load(pop_file,"pop")
@@ -188,7 +188,7 @@ function run_simulations(
             tracker = load(tracker_file,"tracker")
         end
         # Relate population with tracker
-        # TODO: tracker.population_path = pop_file
+        tracker.population_path = pop_file
         # if generations not reached
         if pop.generation < generations
             # Run generations
@@ -196,12 +196,12 @@ function run_simulations(
                 # evolve
                 evolve!(pop)
                 # update tracker
-                # TODO: track!(tracker,pop)
+                track!(tracker,pop)
             end
         end
         # Save Population
         save(pop_file, "pop", pop)
         # Save Tracker
-        # TODO: save(tracker_file, "tracker", tracker)
+        save(tracker_file, "tracker", tracker)
     end
 end
