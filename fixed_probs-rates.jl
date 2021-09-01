@@ -11,6 +11,9 @@ any(LOAD_PATH .== pwd()) || push!(LOAD_PATH, pwd())
 "loading utils..." |> println
 @everywhere begin
     using .GroupReputations
+    using Distributed
+    using Random, StatsBase, Statistics
+    using JLD, DataFrames, CSV
 
     #Fixed parameters
     # Population size
@@ -49,7 +52,7 @@ end
     # Repetitions and length
     repetitions = 5
     initial_repetition = 0
-    generations = 50_000
+    generations = 50#_000
     # Title
     simulation_title = "fixed_prob-rate"
 end
