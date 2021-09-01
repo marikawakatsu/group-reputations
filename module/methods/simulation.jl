@@ -144,7 +144,7 @@ function run_simulations(
             prob_values = 0.5,
             rate_values = 1.0,
             burn_in = 5_000,
-            report = 1_000
+            report = Inf
         )
 
 
@@ -160,6 +160,7 @@ function run_simulations(
 
     @sync @distributed for i in index
         (r,norm,ir,gr,ib,gb,prob,rate) = i
+        # Parameters path
         path  = "results/"*
                 "$simulation_title/"*
                 "norm$norm-"*
@@ -206,5 +207,12 @@ function run_simulations(
         save(pop_file, "pop", pop)
         # Save Tracker
         save(tracker_file, "tracker", tracker)
+        # Report finish
+        types = ["private","public "]
+        bases = ["random  ","behavior"]
+        ">>  $norm  |  "*
+        "ind : $(types[Int(ir)+1]) - $(bases[Int(ib)+1])  |  "*
+        "grp : $(types[Int(gr)+1]) - $(bases[Int(gb)+1])  |  "*
+        "prob : $prob  |  rate : $rate" |> println
     end
 end
