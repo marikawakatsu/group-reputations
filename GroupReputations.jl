@@ -41,9 +41,7 @@ module GroupReputations
     export get_avg_fitness
 
     # variables
-    const parameters_game = ["weak_selection","medium_selection","strong_selection"]
     const social_norms = ["SJ", "SS", "SC", "SH"]
-    export parameters_game
     export social_norms
 
 end
