@@ -65,8 +65,7 @@ Report progress during simulation
 """
 function _report(
     tracker::Tracker,
-    pop::Population,
-    gen::Int64
+    pop::Population
     )
 
     cooperation = tracker.avg_cooperation |> _round
@@ -75,7 +74,7 @@ function _report(
     reps_ind    = tracker.avg_reps_ind    |> _round
     fitness     = tracker.avg_fitness     |> _round
 
-    "Generation                  =\t$gen" |> println
+    "Generation                  =\t$(pop.generation)" |> println
     for k in 1:pop.num_groups
         "Group $k: \n" |> print
         "\tGroup size          =\t$(pop.group_sizes[k] * pop.N |> Int) \n" |> print
