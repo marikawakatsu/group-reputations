@@ -18,4 +18,4 @@ module purge
 module load julia/1.5.0
 module list
 
-julia fixed_probs-rates.jl
+julia m_sweep-src-prob-rate.jl
