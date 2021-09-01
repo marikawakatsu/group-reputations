@@ -143,7 +143,8 @@ function run_simulations(
             grp_reps_base_values = true,
             prob_values = 0.5,
             rate_values = 1.0,
-            burn_in = 5_000
+            burn_in = 5_000,
+            report = 1_000
         )
 
 
@@ -197,6 +198,8 @@ function run_simulations(
                 evolve!(pop)
                 # update tracker
                 track!(tracker,pop)
+                # report
+                (gen % report == 0) && _report(tracker,pop)
             end
         end
         # Save Population
