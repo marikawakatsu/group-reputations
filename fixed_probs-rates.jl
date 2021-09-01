@@ -1,6 +1,6 @@
 using Distributed
 "loading workers..." |> println
-workers = 4
+workers = 1 + 12
 nprocs() < workers && addprocs( workers - nprocs() )
 
 "loading module..." |> println
@@ -48,7 +48,7 @@ end
     # Rate of updating reps
     rate_values = 0.0:0.2:1.0
     # Initial generations without averaging
-    burn_in = 5_000
+    burn_in = 5#_000
     # Repetitions and length
     repetitions = 5
     initial_repetition = 0
