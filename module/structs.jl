@@ -62,8 +62,8 @@ mutable struct Tracker
     final_generation::Int64            # final generation of the corresponding simulation run
     avg_cooperation::Array{Float64, 2} # a num_groups-by-num_groups matrix tracking average within- and between-group cooperation
     avg_frequencies::Array{Float64, 2} # a num_groups-by-num_strategies matrix tracking average strategy frequencies per group
-    avg_reps_grp::Array{Float64, 1}    # a num_groups-element array tracking average group reputations
-    avg_reps_ind::Array{Float64, 1}    # a num_groups-element array tracking average individual reputations per group
+    avg_reps_grp::Array{Float64, 2}    # a num_groups-by_num_groups matrix tracking average group reputations
+    avg_reps_ind::Array{Float64, 2}    # a num_groups-by_num_groups matrix tracking average individual reputations per group
     avg_fitness::Array{Float64, 2}     # a num_groups-by-num_strategies matrix tracking average fitness of each strategy per group
     avg_global_cooperation::Float64    # a float tracking average global cooperation
     population_path::String            # path to the stored population

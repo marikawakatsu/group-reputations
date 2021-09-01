@@ -5,11 +5,10 @@ Initialize Tracker
 """
 function init_tracker(
     pop::Population,
-    generations::Int64
     )
 
     inx = get_frequencies(pop) .!== 0.0  # indices for group-strategy combinations with nonzero freqs
-    avg_fitness = zeros(Float64, pop.num_tags, pop.num_strategies)  # initialize avg_fitness
+    avg_fitness = zeros(Float64, pop.num_groups, pop.num_strategies)  # initialize avg_fitness
 
     # Allocate memory
     avg_cooperation        = get_cooperation(pop)
@@ -26,7 +25,7 @@ function init_tracker(
     # Register population
     population_path = "Not Defined"
     # Register tracker in population
-    pop.num_trackers +=1
+    # pop.num_trackers +=1
 
     return Tracker( initial_generation,
                     final_generation,
@@ -63,7 +62,6 @@ _round(x) = round.( x; digits=3 )
 
 """
 Report progress during simulation
-!!! CHECK THE SHAPE OF avg_reps_grp and avg_reps_ind !!!
 """
 function _report(
     tracker::Tracker,
@@ -77,26 +75,17 @@ function _report(
     reps_ind    = tracker.avg_reps_ind    |> _round
     fitness     = tracker.avg_fitness     |> _round
 
-    if pop.num_groups <= 2
-        "Generation           =\t$gen" |> println
-        "Group 1: \n" |> print
-        "\tSize           =\t$(pop.N1) \n"           |> print
-        "\tCooperation    =\t$(cooperation[1,:])"    |> println
-        "\tStrategies     =\t$(frequencies[1,:]) \n" |> print
-        "\tGroup reps     =\t$(reps_grp[1,:]) \n"    |> print
-        "\tIndiv reps     =\t$(reps_ind[1,:]) \n"    |> print
-        "\tAvg Fitness    =\t$(fitness[1,:]) \n"     |> print
-        "Group 2: \n" |> print
-        "\tSize           =\t$(pop.N-pop.N1) \n"     |> print
-        "\tCooperation    =\t$(cooperation[2,:])"    |> println
-        "\tStrategies     =\t$(frequencies[2,:]) \n" |> print
-        "\tGroup reps     =\t$(reps_grp[2,:]) \n"    |> print
-        "\tIndiv reps     =\t$(reps_ind[2,:]) \n"    |> print
-        "\tAvg Fitness    =\t$(fitness[2,:]) \n"     |> print
-        "-"^50  |> println
-    else
-        "There are more than 2 groups; udpate _report function to display intermediate results" |> print
+    "Generation                  =\t$gen" |> println
+    for k in 1:pop.num_groups
+        "Group $k: \n" |> print
+        "\tGroup size          =\t$(pop.group_sizes[k] * pop.N |> Int) \n" |> print
+        "\tAvg cooperation     =\t$(cooperation[k,:])"    |> println
+        "\tAvg strategies      =\t$(frequencies[k,:]) \n" |> print
+        "\tAvg group reps      =\t$(reps_grp[k,:]) \n"    |> print
+        "\tAvg individual reps =\t$(reps_ind[k,:]) \n"    |> print
+        "\tAvg fitness         =\t$(fitness[k,:]) \n"     |> print
     end
+    "-"^50  |> println
 
 end
 

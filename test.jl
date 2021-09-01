@@ -11,7 +11,7 @@ end
 # Set parameters
 begin
     # Population size
-    const N    = 50
+    const N    = 10
     # Payoff parameters
     const b    = 1.0
     const c    = 0.2
@@ -52,8 +52,8 @@ begin
     pop = random_population(
         N,
         game,
-        ind_reps_public = false,
-        grp_reps_public = false,
+        ind_reps_public = true,
+        grp_reps_public = true,
         group_sizes = [0.25, 0.25, 0.5],
         prob_values = [0.0, 0.5, 1.0],
         prob_weights = [0.5, 0.25, 0.25],
