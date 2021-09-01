@@ -47,9 +47,9 @@ end
     # Initial generations without averaging
     burn_in = 5_000
     # Repetitions and length
-    repetitions = 3
+    repetitions = 5
     initial_repetition = 0
-    generations = 10_000
+    generations = 50_000
     # Title
     simulation_title = "fixed_prob-rate"
 end
@@ -65,4 +65,8 @@ end
         prob_values, rate_values,
         burn_in
         )
-"... done!" |> println
+"DONE!" |> println
+
+"extracting data..." |> println
+extract_data(simulation_title)
+"...done!" |> println
