@@ -8,7 +8,7 @@
 #SBATCH --mail-type=all
 #SBATCH --mail-user=mk28@princeton.edu
 #SBATCH --array=0-9
-#SBATCH --output=della/%A.%a.out
+#SBATCH --output=della/della_%A_%a.out
 
 echo "My SLURM_ARRAY_JOB_ID is $SLURM_ARRAY_JOB_ID."
 echo "My SLURM_ARRAY_TASK_ID is $SLURM_ARRAY_TASK_ID"
