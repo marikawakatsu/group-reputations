@@ -7,7 +7,7 @@
 #SBATCH --time=02:00:00
 #SBATCH --mail-type=all
 #SBATCH --mail-user=sm75@princeton.edu
-#SBATCH --output=./out/%A-%a.out
+#SBATCH --output=out/%A.out
 
 module purge
 module load julia/1.5.0
