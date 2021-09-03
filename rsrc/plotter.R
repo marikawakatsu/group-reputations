@@ -119,7 +119,16 @@ plot_heatmap <- function(simdata_sub, norm = "SJ", metric = "cooperation", label
 ################
 # PLOT LINES
 ################
-plot_line_coop <- function(simdata_sub, norm = "SJ", metric = measure_coop[2:5], label = "Average\ncooperation"){
+plot_line <- function(simdata_sub, norm = "SJ", metric = measure_coop[2:5], label = "Average\ncooperation"){
+  
+  # choose colors
+  if( "coop_11" %in% metric ){
+    colors = viridis(5)[1:4]
+  }else if( "reps_ind_11" %in% metric || "reps_grp_11" %in% metric ){
+    colors = c("#377eb8","#e41a1c","#ff7f00","#377eb8","#e41a1c","#ff7f00") # !!! CHANGE !!!
+  }else if( "freq1_ALLC" %in% metric){
+    colors = c("#377eb8","#e41a1c","#ff7f00","#377eb8","#e41a1c","#ff7f00")
+  }
   
   # fix ind_base = 1
   subdata <- simdata_sub[simdata_sub$Metric %in% metric & 
@@ -144,7 +153,7 @@ plot_line_coop <- function(simdata_sub, norm = "SJ", metric = measure_coop[2:5],
     scale_x_continuous( breaks = seq(0, 1, 0.2)) +
     scale_y_continuous( breaks = seq(0, 1, 0.2),
                         limits = c(0, 1)) +
-    scale_color_manual(values = c("#2b8cbe","#2b8cbe","#a8ddb5","#a8ddb5"),
+    scale_color_manual(values = colors, # c("#2b8cbe","#2b8cbe","#a8ddb5","#a8ddb5"),
                        name   = "Average\ncooperation") +
     geom_errorbar(aes(ymin = Mean - SD, ymax = Mean + SD), width = 0, size = 0.3) +
     geom_line(size = 0.4, alpha = 1, lty = 1) +
@@ -155,7 +164,50 @@ plot_line_coop <- function(simdata_sub, norm = "SJ", metric = measure_coop[2:5],
                space="free", scales="free") +
     theme(strip.placement = "outside",
           # strip.background = element_blank()
+          panel.grid.major = element_line(size = 0.2, colour = "grey95")
           ) 
+  
+  return(fig)
+}
+
+plot_line_strat <- function(simdata_sub, norm = "SJ", metric = measure_freq, label = "Average\nreputation"){
+  
+  # fix ind_base = 1
+  subdata <- simdata_sub[simdata_sub$Metric %in% metric & 
+                           simdata_sub$norm == norm & 
+                           simdata_sub$ind_base == TRUE &
+                           simdata_sub$rate %in% c(0,1), ]
+  
+  fig <- ggplot(data = subdata,
+                aes(x = prob, y = Mean, color = Metric, label = Metric)) +
+    theme_classic() +
+    theme(plot.title = element_text(hjust = 0.5)) +
+    theme(plot.title = element_text(hjust = 0.5, 
+                                    size = 10, 
+                                    margin = margin(0,0,0,0) ) ) +
+    theme (legend.text = element_text (size = 7),
+           legend.title = element_text(size = 8),
+           legend.key.size = unit(0.04, "npc"),
+           panel.spacing = unit(0.25,"lines"),
+           legend.margin = margin(t = 0, unit="npc")
+    ) +
+    ggtitle( paste0("norm: ", norm) ) +
+    scale_x_continuous( breaks = seq(0, 1, 0.2)) +
+    scale_y_continuous( breaks = seq(0, 1, 0.2),
+                        limits = c(0, 1)) +
+    scale_color_manual(values = c("#377eb8","#e41a1c","#ff7f00","#377eb8","#e41a1c","#ff7f00"),
+                       name   = "Average\ncooperation") +
+    geom_errorbar(aes(ymin = Mean - SD, ymax = Mean + SD), width = 0, size = 0.3) +
+    geom_line(size = 0.4, alpha = 1, lty = 1) +
+    geom_point(stat="identity", size = 1.1, alpha = 1, stroke = 0.5) + #, shape = 21, fill = "white") +
+    labs(x = "Probability of DISC using individual reputations (p)",
+         y = "Frequency") +
+    facet_grid(grp_base_label ~ rate_label, 
+               space="free", scales="free") +
+    theme(strip.placement = "outside",
+          # strip.background = element_blank()
+          panel.grid.major = element_line(size = 0.2, colour = "grey95")
+    ) 
   
   return(fig)
 }
@@ -164,24 +216,44 @@ plot_line_coop <- function(simdata_sub, norm = "SJ", metric = measure_coop[2:5],
 # SAVE PLOTS
 ##############
 # test plots
-simdata_sub <- simdata_coop
-metric      <- "cooperation"
-label       <- "Average\ncooperation"
 norms       <- unique(simdata$norm)
 
 for(norm in norms){
   
-  png(filename = paste0("plots/", metric, "_heatmap_", norm, "_",
-                        format(Sys.Date(), format="%y%m%d"), ".png"),
+  # cooperation, all
+  simdata_sub <- simdata_coop
+  metric      <- "cooperation"
+  label       <- "Average\ncooperation"
+  
+  png(filename = paste0("plots/", "cooperation", "_heatmap_", norm, "_", format(Sys.Date(), format="%y%m%d"), ".png"),
       width = 6, height = 5, units = "in", res = 600)
   print(plot_heatmap(simdata_sub, norm, metric, label))
   dev.off()
   Sys.sleep(1)
+  print("done")
   
-  png(filename = paste0("plots/", metric, "_line_", norm, "_",
-                        format(Sys.Date(), format="%y%m%d"), ".png"),
+  # cooperation, by group
+  simdata_sub <- simdata_coop
+  metric      <- measure_coop[2:5]
+  label       <- "Average\ncooperation"
+
+  png(filename = paste0("plots/", metric, "_line_", norm, "_", format(Sys.Date(), format="%y%m%d"), ".png"),
       width = 6, height = 5, units = "in", res = 600)
-  print(plot_line_coop(simdata_sub, norm))
+  print(plot_line(simdata_sub, norm, metric, label))
   dev.off()
   Sys.sleep(1)
+  
+  print("done")
+  # strat frequencies
+  simdata_sub <- simdata_freq
+  metric      <- measure_freq
+  label       <- "Average\nfrequency"
+  
+  png(filename = paste0("plots/","freq", "_line_", norm, "_", format(Sys.Date(), format="%y%m%d"), ".png"),
+      width = 6, height = 5, units = "in", res = 600)
+  print(plot_line(simdata_sub, norm, metric, label))
+  dev.off()
+  Sys.sleep(1)
+  print("done")
+  
 }
