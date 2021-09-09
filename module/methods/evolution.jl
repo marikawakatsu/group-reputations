@@ -193,9 +193,11 @@ Update Actions
     Round of pairwise interactions
     Use individual reputations with some probability
 """
-function update_actions!(
+function update_actions_and_fitness!(
     pop::Population
     )
+    # New fitness
+    pop.fitness .= 0
     # Round of pairwise games
     for i in 1:pop.N, j in i:pop.N
         # Strategies
@@ -209,31 +211,19 @@ function update_actions!(
         g_ij = pop.reps_grp[i,g_j]
         g_ji = pop.reps_grp[j,g_i]
         # Determine the action of i towards j
-        a_ij = rand() < pop.probs[i] ? _action(s_i,r_ij) : _action(s_i,g_ij)
-        a_ji = rand() < pop.probs[j] ? _action(s_j,r_ji) : _action(s_j,g_ji)
+        a_ij, c_ij = rand() < pop.probs[i] ? (_action(s_i,g_ij),0) : (_action(s_i,r_ij),1)
+        a_ji, c_ji = rand() < pop.probs[j] ? (_action(s_j,g_ji),0) : (_action(s_j,r_ji),1)
         # Performance error
         rand() < pop.game.u_p && (a_ij = 0)
         rand() < pop.game.u_p && (a_ji = 0)
         # Save
         pop.actions[i,j] = a_ij
         pop.actions[j,i] = a_ji
+        # Fitness
+        pop.fitness[i] += pop.game.b * a_ji - pop.game.c * a_ij - pop.cost * c_ij
+        pop.fitness[j] += pop.game.b * a_ij - pop.game.c * a_ji - pop.cost * c_ji
     end
-end
-
-"""
-Update Fitness
-"""
-function update_fitness!(
-    pop::Population
-    )
-    for i in 1:pop.N
-        # Cost of cooperating
-        cost = pop.game.c * sum(pop.actions[i,:])/pop.N
-        # Received benefit
-        benefit = pop.game.b * sum(pop.actions[:,i])/pop.N
-        # Update fitness
-        pop.fitness[i] = benefit - cost
-    end
+    pop.fitness /= pop.N
 end
 
 """
