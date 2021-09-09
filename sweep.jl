@@ -69,6 +69,6 @@ end
         repetitions, initial_repetition,
         simulation_title, social_norms,
         all_strategies, group_sizes,
-        index[id]...
+        parameters[id]...
         )
 "DONE!" |> println
