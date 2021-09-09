@@ -12,8 +12,7 @@ module GroupReputations
     include("./module/methods/evolution.jl")
     export update_individual_reputations!
     export update_group_reputations!
-    export update_actions!
-    export update_fitness!
+    export update_actions_and_fitness!
     export update_strategies!
     export mutate!
     export evolve!

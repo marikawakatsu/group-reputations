@@ -50,15 +50,15 @@ function random_population(
     norm = "SJ",
     all_strategies = [1,2,3],
     group_sizes = [0.5, 0.5],
-    ind_reps_public = true,      # public
-    grp_reps_public = true,      # public
+    ind_reps_scale = 0,      # public
+    grp_reps_scale = 0,      # public
     ind_reps_base_values = true,     # based on behavior
     grp_reps_base_values = true,     # based on behavior
     prob_values = 0.5,
     rate_values = 1.0,
     cost_values = 0.0,
     ind_reps_src_ind_values = true,  # based on ind rep
-    grp_reps_src_grp_values = false,  # based on ind rep
+    grp_reps_src_grp_values = true,  # based on grp rep
     prob_weights = [0.5, 0.5],
     rate_weights = [0.5, 0.5],
     cost_weights = [0.5, 0.5],
@@ -89,16 +89,34 @@ function random_population(
     prev_reps_ind       = sample_parameters((N, N))
     reps_grp            = sample_parameters((N, num_groups))
     prev_reps_grp       = sample_parameters((N, num_groups))
-    if ind_reps_public
+    # Public
+    if ind_reps_scale == 0
         for j in 1:N
             reps_ind[:,j] .= reps_ind[1,j]
             prev_reps_ind[:,j] .= prev_reps_ind[1,j]
         end
+    # Groupal
+    elseif ind_reps_scale == 1
+        for g in 1:num_groups
+            g_i = (membership .== g) |> findall
+            i = g_i |> sample
+            reps_ind[g_i,j] .= reps_ind[i,j]
+            prev_reps_ind[g_i,j] .= prev_reps_ind[i,j]
+        end
     end
-    if grp_reps_public
-        for j in 1:num_groups
-            reps_grp[:,j] .= reps_grp[1,j]
-            prev_reps_grp[:,j] .= prev_reps_grp[1,j]
+    # Public
+    if grp_reps_scale == 0
+        for g in 1:num_groups
+            reps_grp[:,g] .= reps_grp[1,g]
+            prev_reps_grp[:,g] .= prev_reps_grp[1,g]
+        end
+    # Groupal
+    elseif grp_reps_scale == 1
+        for g in 1:num_groups, g_j in 1:num_groups
+            g_i = (membership .== g) |> findall
+            i = g_i |> sample
+            reps_grp[g_i,g_j] .= reps_grp[i,g_j]
+            prev_reps_grp[g_i,g_j] .= prev_reps_grp[i,g_j]
         end
     end
     actions             = sample_parameters((N, N))
@@ -110,8 +128,8 @@ function random_population(
         N, game, norm,
         num_strategies, all_strategies,
         num_groups, all_groups, group_sizes,
-        ind_reps_public, ind_reps_base, ind_reps_src_ind,
-        grp_reps_public, grp_reps_base, grp_reps_src_grp,
+        ind_reps_scale, ind_reps_base, ind_reps_src_ind,
+        grp_reps_scale, grp_reps_base, grp_reps_src_grp,
         strategies, membership,
         reps_ind, reps_grp,
         prev_reps_ind, prev_reps_grp,
@@ -139,8 +157,8 @@ function run_simulations(
             social_norms = "SJ",
             all_strategies = [1,2,3],
             group_sizes = [0.5, 0.5],
-            ind_reps_public = true,
-            grp_reps_public = true,
+            ind_reps_scale = 0,
+            grp_reps_scale = 0,
             ind_reps_base_values = true,
             grp_reps_base_values = true,
             prob_values = 0.5,
@@ -148,16 +166,16 @@ function run_simulations(
             cost_values = 0.0,
             burn_in = 5_000,
             ind_reps_src_values = true,
-            grp_reps_src_values = false,
+            grp_reps_src_values = true,
             report = Inf
         )
 
 
     reps = initial_repetition:(initial_repetition+repetitions-1)
-    index = [ (r,norm,ir,gr,ib,gb,is,gs,prob,rate) for  r in reps,
+    index = [ (r,norm,ir,gr,ib,gb,is,gs,prob,rate,cost) for  r in reps,
                                                 norm in [social_norms...],
-                                                ir in [ind_reps_public...],
-                                                gr in [grp_reps_public...],
+                                                ir in [ind_reps_scale...],
+                                                gr in [grp_reps_scale...],
                                                 ib in [ind_reps_base_values...],
                                                 gb in [grp_reps_base_values...],
                                                 is in [ind_reps_src_values...],
@@ -175,7 +193,7 @@ function run_simulations(
                 "type$(Int(ir))$(Int(gr))-"*
                 "base$(Int(ib))$(Int(gb))-"*
                 "src$(Int(is))$(Int(gs))-"*
-                "prob$prob-rate$rate"
+                "prob$prob-rate$rate-cost$cost"
         !ispath(path) && mkpath(path)
         # Files
         pop_file = path * "/pop_$r.jld"
@@ -217,7 +235,7 @@ function run_simulations(
         # Save Tracker
         save(tracker_file, "tracker", tracker)
         # Report finish
-        types = ["private","public "]
+        types = ["public ","groupal","private"]
         bases = ["random  ","behavior"]
         sources = ["other","self "]
         ">>  $norm  |  "*

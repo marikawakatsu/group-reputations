@@ -8,7 +8,7 @@ function extract_data(simulation_title::String)
     !ispath(data) && mkpath(data)
 
     colnames = [:N, :norm, :all_strategies, :num_groups, :group_sizes, :generation,
-                :ind_public, :grp_public, :ind_base, :grp_base,
+                :ind_scale, :grp_scale, :ind_base, :grp_base,
                 :ind_src_ind, :grp_src_grp, :prob, :rate,
                 :cooperation, :coop_11, :coop_12, :coop_21, :coop_22,
                 :reps_ind_11, :reps_ind_12, :reps_ind_21, :reps_ind_22,
@@ -40,8 +40,8 @@ function extract_data(simulation_title::String)
             results[r,:] = [
                 pop.N, pop.norm, pop.all_strategies, pop.num_groups,
                 pop.group_sizes, pop.generation,
-                mean(Int.(pop.ind_reps_public)),
-                mean(Int.(pop.grp_reps_public)),
+                mean(Int.(pop.ind_reps_scale)),
+                mean(Int.(pop.grp_reps_scale)),
                 mean(Int.(pop.ind_reps_base)),
                 mean(Int.(pop.grp_reps_base)),
                 mean(Int.(pop.ind_reps_src_ind)),

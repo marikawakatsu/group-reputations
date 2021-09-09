@@ -121,10 +121,10 @@ function update_individual_reputations!(
     pop.prev_reps_ind = pop.reps_ind |> deepcopy
     pop.reps_ind .= 0
     # Public
-    if pop.ind_reps_public
+    if pop.ind_reps_scale == 0
         for j in 1:pop.N
             # Random observer
-            i = 1:pop.N |> sample
+            i = sample(1:pop.N)
             # Individual reputation
             r = _ind_reputation(pop,i,j)
             # Assignment error
@@ -132,8 +132,22 @@ function update_individual_reputations!(
             # Broadcast
             pop.reps_ind[:,j] .= r
         end
+    # Groupal
+    elseif pop.ind_reps_scale == 1
+        for g in 1:pop.num_groups, j in 1:pop.N
+            # Members of group g
+            g_i =  (pop.membership .== g) |> findall
+            # Sample observer
+            i = g_i |> sample
+            # Both views
+            r = _ind_reputation(pop,i,j)
+            # Assignment error
+            rand() < pop.game.u_a && (r = 1-r)
+            # Update
+            pop.reps_ind[g_i,j] .= r
+        end
     # Private
-    else
+    elseif pop.ind_reps_scale == 2
         for i in 1:pop.N, j in i:pop.N
             # Both views
             r_ij = _ind_reputation(pop,i,j)
@@ -160,7 +174,7 @@ function update_group_reputations!(
     pop.prev_reps_grp = pop.reps_grp |> deepcopy
     pop.reps_grp .= 0
     # Public
-    if pop.grp_reps_public
+    if pop.grp_reps_scale == 0
         for g in 1:pop.num_groups
             # Random observer
             i = 1:pop.N |> sample
@@ -173,8 +187,24 @@ function update_group_reputations!(
             # Update broadcast
             pop.reps_grp[:,g] .= r
         end
+    # Groupal
+    elseif pop.grp_reps_scale == 1
+        for g in 1:pop.num_groups, g_j in 1:pop.num_groups
+            # Members of group g
+            g_i = (pop.membership .== g) |> findall
+            # Sample observer
+            i = g_i |> sample
+            # Both views
+            r = _grp_reputation(pop,i,g_j)
+            # Assignment error
+            rand() < pop.game.u_a && (r = 1-r)
+            # Rate of updating
+            r = rand() < pop.rates[i] ? r : pop.prev_reps_grp[i,g]
+            # Update
+            pop.reps_grp[g_i,g_j] .= r
+        end
     # Private
-    else
+    elseif pop.grp_reps_scale == 2
         for i in 1:pop.N, g in 1:pop.num_groups
             # Reputation of j in eyes of i
             r = _grp_reputation(pop,i,g)
@@ -220,8 +250,8 @@ function update_actions_and_fitness!(
         pop.actions[i,j] = a_ij
         pop.actions[j,i] = a_ji
         # Fitness
-        pop.fitness[i] += pop.game.b * a_ji - pop.game.c * a_ij - pop.cost * c_ij
-        pop.fitness[j] += pop.game.b * a_ij - pop.game.c * a_ji - pop.cost * c_ji
+        pop.fitness[i] += pop.game.b * a_ji - pop.game.c * a_ij - pop.costs[i] * c_ij
+        pop.fitness[j] += pop.game.b * a_ij - pop.game.c * a_ji - pop.costs[j] * c_ji
     end
     pop.fitness /= pop.N
 end
@@ -257,8 +287,7 @@ function evolve!(
     pop::Population
     )
     mutate!(pop)
-    update_actions!(pop)
-    update_fitness!(pop)
+    update_actions_and_fitness!(pop)
     update_individual_reputations!(pop)
     update_group_reputations!(pop)
     update_strategies!(pop)
