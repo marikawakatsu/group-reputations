@@ -50,13 +50,13 @@ function random_population(
     norm = "SJ",
     all_strategies = [1,2,3],
     group_sizes = [0.5, 0.5],
+    prob_values = 0.5,
+    rate_values = 1.0,
+    cost_values = 0.0,
     ind_reps_scale = 0,      # public
     grp_reps_scale = 0,      # public
     ind_reps_base_values = true,     # based on behavior
     grp_reps_base_values = true,     # based on behavior
-    prob_values = 0.5,
-    rate_values = 1.0,
-    cost_values = 0.0,
     ind_reps_src_ind_values = true,  # based on ind rep
     grp_reps_src_grp_values = true,  # based on grp rep
     prob_weights = [0.5, 0.5],
@@ -157,35 +157,35 @@ function run_simulations(
             social_norms = "SJ",
             all_strategies = [1,2,3],
             group_sizes = [0.5, 0.5],
+            prob_values = 0.5,
+            rate_values = 1.0,
+            cost_values = 0.0,
             ind_reps_scale = 0,
             grp_reps_scale = 0,
             ind_reps_base_values = true,
             grp_reps_base_values = true,
-            prob_values = 0.5,
-            rate_values = 1.0,
-            cost_values = 0.0,
-            burn_in = 5_000,
             ind_reps_src_values = true,
             grp_reps_src_values = true,
+            burn_in = 5_000,
             report = Inf
         )
 
 
     reps = initial_repetition:(initial_repetition+repetitions-1)
-    index = [ (r,norm,ir,gr,ib,gb,is,gs,prob,rate,cost) for  r in reps,
+    index = [ (r,norm,prob,rate,cost,ir,gr,ib,gb,is,gs) for  r in reps,
                                                 norm in [social_norms...],
+                                                prob in [prob_values...],
+                                                rate in [rate_values...],
+                                                cost in [cost_values...],
                                                 ir in [ind_reps_scale...],
                                                 gr in [grp_reps_scale...],
                                                 ib in [ind_reps_base_values...],
                                                 gb in [grp_reps_base_values...],
                                                 is in [ind_reps_src_values...],
-                                                gs in [grp_reps_src_values...],
-                                                prob in [prob_values...],
-                                                rate in [rate_values...],
-                                                cost in [cost_values...]][:]
+                                                gs in [grp_reps_src_values...]][:]
 
     @sync @distributed for i in index
-        (r,norm,ir,gr,ib,gb,is,gs,prob,rate,cost) = i
+        (r,norm,prob,rate,cost,ir,gr,ib,gb,is,gs) = i
         # Parameters path
         path  = "results/"*
                 "$simulation_title/"*
@@ -204,7 +204,7 @@ function run_simulations(
             game = Game(game_pars...)
             # Get Population
             pop  = random_population( N, game, norm, all_strategies, group_sizes,
-                                    ir, gr, ib, gb, prob, rate, cost, is, gs)
+                                    prob, rate, cost, ir, gr, ib, gb, is, gs)
             # Burn in generations
             [ evolve!(pop) for _ in burn_in ]
             pop.generation = 0
