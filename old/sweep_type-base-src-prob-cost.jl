@@ -1,6 +1,6 @@
 using Distributed
 "loading workers..." |> println
-workers = 1 + 12
+workers = 2#1 + 12
 nprocs() < workers && addprocs( workers - nprocs() )
 
 "loading module..." |> println
@@ -41,10 +41,12 @@ end
     # Based or not on behavior
     ind_reps_base_values = [false,true]
     grp_reps_base_values = [false,true]
-    # Probability of using individual reps
+    # Probability of using group reps
     prob_values = 0.0:0.2:1.0
     # Rate of updating reps
     rate_values = 0.0
+    # Costs of using individual reps
+    cost_values = 0.0:0.2:1.0
     # Based or not on temselves
     ind_reps_src_values = [false,true]
     grp_reps_src_values = [false,true]
@@ -55,7 +57,7 @@ end
     initial_repetition = 0
     generations = 50_000
     # Title
-    simulation_title = "sweep_type-base-src-prob"
+    simulation_title = "sweep_type-base-src-prob-cost"
 end
 
 "running simulations..." |> println
@@ -66,7 +68,7 @@ end
         all_strategies, group_sizes,
         ind_reps_public, grp_reps_public,
         ind_reps_base_values, grp_reps_base_values,
-        prob_values[id], rate_values,
+        prob_values[id], rate_values, cost_values,
         burn_in, ind_reps_src_values, grp_reps_src_values
         )
 "DONE!" |> println
