@@ -27,3 +27,4 @@ Manifest.toml
 .gitignore
 results/
 data/
+.Rproj.user
