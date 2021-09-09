@@ -27,4 +27,10 @@ Manifest.toml
 .gitignore
 results/
 data/
+
+# Ignore misc R files
+.Rhistory
+.Rapp.history
+.RData
+.Ruserdata
 .Rproj.user
