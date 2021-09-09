@@ -66,7 +66,6 @@ function random_population(
     grp_reps_base_weights = [0.5,0.5],
     ind_reps_src_ind_weights = [0.5,0.5],
     grp_reps_src_grp_weights = [0.5,0.5],
-    threshold = 0.5
     )
     # Strategies
     num_strategies      = length(all_strategies)
@@ -113,7 +112,7 @@ function random_population(
         num_groups, all_groups, group_sizes,
         ind_reps_public, ind_reps_base, ind_reps_src_ind,
         grp_reps_public, grp_reps_base, grp_reps_src_grp,
-        threshold, strategies, membership,
+        strategies, membership,
         reps_ind, reps_grp,
         prev_reps_ind, prev_reps_grp,
         actions, fitness,

@@ -169,9 +169,9 @@ function update_group_reputations!(
             # Assignment error
             rand() < pop.game.u_a && (r = 1-r)
             # Rate of updating
-            r = pop.rates[i] * r + (1-pop.rates[i]) * pop.prev_reps_grp[i,g]
+            r = rand() < pop.rates[i] ? r : pop.prev_reps_grp[i,g]
             # Update broadcast
-            pop.reps_grp[:,g] .= Int(r >= pop.threshold)
+            pop.reps_grp[:,g] .= r
         end
     # Private
     else
@@ -181,9 +181,9 @@ function update_group_reputations!(
             # Assignment error
             rand() < pop.game.u_a && (r = 1-r)
             # Rate of updating
-            r = pop.rates[i] * r + (1-pop.rates[i]) * pop.prev_reps_grp[i,g]
+            r = rand() < pop.rates[i] ? r : pop.prev_reps_grp[i,g]
             # Update
-            pop.reps_grp[i,g] = Int(r >= pop.threshold)
+            pop.reps_grp[i,g] = r
         end
     end
 end

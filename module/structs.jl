@@ -40,7 +40,6 @@ mutable struct Population
     grp_reps_public::Bool               # group reputation type: public or private
     grp_reps_base::Array{Bool, 1}       # group reps are based on behavior (1) or not (0)
     grp_reps_src_grp::Array{Bool, 1}    # update group reps based on individual (0) or group (1) reputation
-    threshold::Float64                  # coupled with rates of updating
     # Storage
     strategies::Array{Int64, 1}         # array of strategies
     membership::Array{Int64, 1}         # array of group memberships
