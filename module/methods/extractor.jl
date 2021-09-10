@@ -9,7 +9,7 @@ function extract_data(simulation_title::String)
 
     colnames = [:N, :norm, :all_strategies, :num_groups, :group_sizes, :generation,
                 :ind_scale, :grp_scale, :ind_base, :grp_base,
-                :ind_src_ind, :grp_src_grp, :prob, :rate,
+                :ind_src_ind, :grp_src_grp, :prob, :rate, :cost,
                 :cooperation, :coop_11, :coop_12, :coop_21, :coop_22,
                 :reps_ind_11, :reps_ind_12, :reps_ind_21, :reps_ind_22,
                 :reps_grp_11, :reps_grp_12, :reps_grp_21, :reps_grp_22,
@@ -48,6 +48,7 @@ function extract_data(simulation_title::String)
                 mean(Int.(pop.grp_reps_src_grp)),
                 mean(pop.probs),
                 mean(pop.rates),
+                mean(pop.costs),
                 tracker.avg_global_cooperation,
                 tracker.avg_cooperation[1,1], tracker.avg_cooperation[1,2],
                 tracker.avg_cooperation[2,1], tracker.avg_cooperation[2,2],
