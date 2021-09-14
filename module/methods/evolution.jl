@@ -249,6 +249,9 @@ function update_actions_and_fitness!(
         # Save
         pop.actions[i,j] = a_ij
         pop.actions[j,i] = a_ji
+        # Cost only for DISC
+        c_ij *= pop.strategies[i]==3
+        c_ji *= pop.strategies[j]==3
         # Fitness
         pop.fitness[i] += pop.game.b * a_ji - pop.game.c * a_ij - pop.costs[i] * c_ij
         pop.fitness[j] += pop.game.b * a_ij - pop.game.c * a_ji - pop.costs[j] * c_ji
