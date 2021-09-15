@@ -97,7 +97,7 @@ function random_population(
         end
     # Groupal
     elseif ind_reps_scale == 1
-        for g in 1:num_groups
+        for g in 1:num_groups, j in 1:N
             g_i = (membership .== g) |> findall
             i = g_i |> sample
             reps_ind[g_i,j] .= reps_ind[i,j]
