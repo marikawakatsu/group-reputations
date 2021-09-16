@@ -15,13 +15,13 @@ setwd("~/Documents/GitHub/group-reputations/")
 ########################
 # path to the data directory
 data_dir     <- "~/Dropbox (Princeton)/Stereotypes_results/group-reputations/"
-data_sub_dir <- "grp_scale-prob-rate-cost"
+data_sub_dir <- "scale-prob-rate-cost"
 
 # load and merge data
 # simdata_m <- read.csv( paste0(data_dir, data_sub_dir, "/", "m_data.csv"), header = TRUE)
-# simdata_s <- read.csv( paste0(data_dir, data_sub_dir, "/", "s_data.csv"), header = TRUE)
+simdata_s <- read.csv( paste0(data_dir, data_sub_dir, "/", "s_data.csv"), header = TRUE)
 # simdata   <- rbind(simdata_m, simdata_s)
-simdata <- read.csv( paste0(data_dir, data_sub_dir, "/", "m_data_type0Xonly.csv"), header = TRUE)
+simdata   <- simdata_s
 
 casecount <- simdata %>% group_by(N, norm, ind_scale, grp_scale, ind_base, grp_base, ind_src_ind, grp_src_grp) %>% summarize(COUNT = n())
 
@@ -72,6 +72,7 @@ compute_mean_vars <- function( simdata_bymeasure, variables ){
   
   simdata_mean <- simdata_mean %>% mutate( rate_label = paste0( "λ = ", rate ))
   simdata_mean <- simdata_mean %>% mutate( cost_label = paste0( "α = ", rate ))
+  simdata_mean$rate <- round(simdata_mean$rate, 2)
   
   return(simdata_mean)
 }
@@ -115,15 +116,16 @@ plot_heatmap_fixed_cost <- function(simdata_sub, norm = "SJ", metric = "cooperat
     ggtitle( paste0("norm ", norm, " (cost α = ", cost, ")") ) +
     scale_x_continuous( breaks = seq(0, 1, 0.2), limits = c(-0.1, 1.1)) +
     scale_y_continuous( breaks = seq(0, 1, 0.2), limits = c(-0.1, 1.1)) +
-    scale_fill_gradient2(low = "#BD1513", mid = "#CFD5D9", high = "#00428B",
+    scale_fill_gradient2(low = "black", high = "white",
+                         # low = "#BD1513", mid = "#CFD5D9", high = "#00428B",
                          midpoint = 0.5,
                          limit    = c(0., 1.),
                          space    = "Lab",
                          name     = label) +
     labs(x = "Probability of DISC using group reputations (p)",
-         y = "Probability of group reputation\nupdate per round (λ)") +
+         y = "Probability of group reputation update per round (λ)") +
     geom_tile( show.legend = TRUE ) + 
-    facet_grid(. ~ grp_scale_label, 
+    facet_grid(ind_scale_label ~ grp_scale_label, 
                space="free", scales="free") +
     theme(strip.placement = "outside") 
   
@@ -167,10 +169,10 @@ plot_heatmap_fixed_rate <- function(simdata_sub, norm = "SJ", metric = "cooperat
                          name     = label) +
     labs(x = "Probability of DISC using group reputations (p)",
          y = "Cost of using individual\nreputations (α)") +
-    geom_tile( show.legend = TRUE ) + 
-    facet_grid(. ~ grp_scale_label, 
+    geom_tile( show.legend = TRUE ) +
+    facet_grid(. ~ grp_scale_label,
                space="free", scales="free") +
-    theme(strip.placement = "outside") 
+    theme(strip.placement = "outside")
   
   return(fig)
 }
@@ -179,7 +181,7 @@ plot_heatmap_fixed_rate <- function(simdata_sub, norm = "SJ", metric = "cooperat
 # PLOT LINES
 ################
 plot_line <- function(simdata_sub, norm = "SJ", metric = measure_coop[2:5], 
-                      label = "Average\ncooperation", cost = 0.0){
+                      label = "Average\ncooperation", cost = 0.0, grp_scale = 0){
   
   # choose colors
   if( "coop_11" %in% metric ){
@@ -200,7 +202,8 @@ plot_line <- function(simdata_sub, norm = "SJ", metric = measure_coop[2:5],
   subdata <- simdata_sub[simdata_sub$Metric %in% metric & 
                            simdata_sub$norm == norm & 
                            simdata_sub$ind_base == TRUE &
-                           simdata_sub$cost == paste0("",cost,""), ]
+                           simdata_sub$cost == paste0("",cost,"") &
+                           simdata_sub$grp_scale == grp_scale, ]
   
   fig <- ggplot(data = subdata,
                 aes(x = prob, y = Mean, color = Metric, linetype = Metric, label = Metric)) +
@@ -227,7 +230,7 @@ plot_line <- function(simdata_sub, norm = "SJ", metric = measure_coop[2:5],
     geom_point(size = 1.1, alpha = 1, stroke = 0.5) + #, shape = 21, fill = "white") +
     labs(x = "Probability of DISC using group reputations (p)",
          y = "Frequency") +
-    facet_grid(grp_scale_label ~ rate_label, 
+    facet_grid(ind_scale_label ~ rate_label, 
                space="free", scales="free") +
     theme(strip.placement = "outside",
           # strip.background = element_blank()
@@ -238,7 +241,7 @@ plot_line <- function(simdata_sub, norm = "SJ", metric = measure_coop[2:5],
 }
 
 plot_line_fixrate <- function(simdata_sub, norm = "SJ", metric = measure_coop[2:5], 
-                              label = "Average\ncooperation", rate = 1.0){
+                              label = "Average\ncooperation", rate = 1.0, grp_scale = 0){
   
   # choose colors
   if( "coop_11" %in% metric ){
@@ -259,7 +262,8 @@ plot_line_fixrate <- function(simdata_sub, norm = "SJ", metric = measure_coop[2:
   subdata <- simdata_sub[simdata_sub$Metric %in% metric & 
                            simdata_sub$norm == norm & 
                            simdata_sub$ind_base == TRUE &
-                           simdata_sub$cost == paste0("",rate,""), ]
+                           simdata_sub$cost == paste0("",rate,"") &
+                           simdata_sub$grp_scale == grp_scale, ]
   
   fig <- ggplot(data = subdata,
                 aes(x = prob, y = Mean, color = Metric, linetype = Metric, label = Metric)) +
@@ -286,7 +290,7 @@ plot_line_fixrate <- function(simdata_sub, norm = "SJ", metric = measure_coop[2:
     geom_point(size = 1.1, alpha = 1, stroke = 0.5) + #, shape = 21, fill = "white") +
     labs(x = "Probability of DISC using group reputations (p)",
          y = "Fitness") +
-    facet_grid(grp_scale_label ~ cost_label, 
+    facet_grid(ind_scale_label ~ cost_label, 
                space="free", scales="free") +
     theme(strip.placement = "outside",
           # strip.background = element_blank()
@@ -318,7 +322,7 @@ for(norm in norms){
   metric      <- "cooperation"
   label       <- "Average\ncooperation"
   width       <- 6
-  height      <- 2.5
+  height      <- 5.5
   
   for(cost in costs){
     png(filename = paste0("plots/", "cooperation", "_heatmap_", norm, "_cost_", cost, "_", format(Sys.Date(), format="%y%m%d"), ".png"),
@@ -326,65 +330,68 @@ for(norm in norms){
     print(plot_heatmap_fixed_cost(simdata_sub, norm, metric, label, cost, TRUE))
     print_figure()
   }
-
+  
   for(rate in rates){
     png(filename = paste0("plots/", "cooperation", "_heatmap_", norm, "_rate_", rate, "_", format(Sys.Date(), format="%y%m%d"), ".png"),
         width = width, height = height, units = "in", res = 600)
     print(plot_heatmap_fixed_rate(simdata_sub, norm, metric, label, rate, TRUE))
     print_figure()
   }
+
+  for(grp_scale in c(0,1,2)){
+    
+    # cooperation, by group
+    simdata_sub <- simdata_coop
+    metric      <- measure_coop[2:5]
+    label       <- "Average\ncooperation"
+    width       <- 9
+    height      <- 5
+    cost        <- 0.2
   
-  # cooperation, by group
-  simdata_sub <- simdata_coop
-  metric      <- measure_coop[2:5]
-  label       <- "Average\ncooperation"
-  width       <- 9
-  height      <- 5
-  cost        <- 0.2
-
-  png(filename = paste0("plots/", "cooperation_bygroup", "_line_", norm, "_cost_", cost, "_", format(Sys.Date(), format="%y%m%d"), ".png"),
-      width = width, height = height, units = "in", res = 600)
-  print(plot_line(simdata_sub, norm, metric, label, cost))
-  print_figure()
-
-  # strat frequencies
-  simdata_sub <- simdata_freq
-  metric      <- measure_freq
-  label       <- "Average\nfrequency"
-
-  png(filename = paste0("plots/","freq", "_line_", norm, "_cost_", cost, "_", format(Sys.Date(), format="%y%m%d"), ".png"),
-      width = width, height = height, units = "in", res = 600)
-  print(plot_line(simdata_sub, norm, metric, label, cost))
-  print_figure()
-
-  # indiv reputations
-  simdata_sub <- simdata_rep_ind
-  metric      <- measure_rep_ind
-  label       <- "Fraction good"
-
-  png(filename = paste0("plots/","rep_ind", "_line_", norm, "_cost_", cost, "_", format(Sys.Date(), format="%y%m%d"), ".png"),
-      width = width, height = height, units = "in", res = 600)
-  print(plot_line(simdata_sub, norm, metric, label, cost))
-  print_figure()
-
-  # group reputations
-  simdata_sub <- simdata_rep_grp
-  metric      <- measure_rep_grp
-  label       <- "Fraction good"
-
-  png(filename = paste0("plots/","rep_grp", "_line_", norm, "_cost_", cost, "_", format(Sys.Date(), format="%y%m%d"), ".png"),
-      width = width, height = height, units = "in", res = 600)
-  print(plot_line(simdata_sub, norm, metric, label, cost))
-  print_figure()
-
-  # fitnesses
-  simdata_sub <- simdata_fitness
-  metric      <- measure_fitness
-  label       <- "Average fitness"
+    png(filename = paste0("plots/", "cooperation_bygroup", "_line_", norm, "_cost_", cost, "_grp_", grp_scale, "_", format(Sys.Date(), format="%y%m%d"), ".png"),
+        width = width, height = height, units = "in", res = 600)
+    print(plot_line(simdata_sub, norm, metric, label, cost))
+    print_figure()
   
-  png(filename = paste0("plots/","fitness", "_line_", norm, "_cost_", cost, "_", format(Sys.Date(), format="%y%m%d"), ".png"),
-      width = width, height = height, units = "in", res = 600)
-  print(plot_line_fixrate(simdata_sub, norm, metric, label, cost))
-  print_figure()
+    # strat frequencies
+    simdata_sub <- simdata_freq
+    metric      <- measure_freq
+    label       <- "Average\nfrequency"
+  
+    png(filename = paste0("plots/","freq", "_line_", norm, "_cost_", cost, "_grp_", grp_scale, "_", format(Sys.Date(), format="%y%m%d"), ".png"),
+        width = width, height = height, units = "in", res = 600)
+    print(plot_line(simdata_sub, norm, metric, label, cost))
+    print_figure()
+  
+    # indiv reputations
+    simdata_sub <- simdata_rep_ind
+    metric      <- measure_rep_ind
+    label       <- "Fraction good"
+  
+    png(filename = paste0("plots/","rep_ind", "_line_", norm, "_cost_", cost, "_grp_", grp_scale, "_", format(Sys.Date(), format="%y%m%d"), ".png"),
+        width = width, height = height, units = "in", res = 600)
+    print(plot_line(simdata_sub, norm, metric, label, cost))
+    print_figure()
+  
+    # group reputations
+    simdata_sub <- simdata_rep_grp
+    metric      <- measure_rep_grp
+    label       <- "Fraction good"
+  
+    png(filename = paste0("plots/","rep_grp", "_line_", norm, "_cost_", cost, "_grp_", grp_scale, "_", format(Sys.Date(), format="%y%m%d"), ".png"),
+        width = width, height = height, units = "in", res = 600)
+    print(plot_line(simdata_sub, norm, metric, label, cost))
+    print_figure()
+  
+    # fitnesses
+    simdata_sub <- simdata_fitness
+    metric      <- measure_fitness
+    label       <- "Average fitness"
+  
+    png(filename = paste0("plots/","fitness", "_line_", norm, "_cost_", cost, "_grp_", grp_scale, "_", format(Sys.Date(), format="%y%m%d"), ".png"),
+        width = width, height = height, units = "in", res = 600)
+    print(plot_line_fixrate(simdata_sub, norm, metric, label, cost))
+    print_figure()
+  }
   
 }
