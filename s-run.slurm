@@ -17,4 +17,4 @@ module purge
 module load julia/1.5.0
 module list
 
-julia sweep.jl
+julia sweep_0.jl

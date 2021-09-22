@@ -29,19 +29,21 @@ begin
     group_sizes = [0.5, 0.5]
     # Reputation type
     ind_reps_scale = [0,1,2]
-    grp_reps_scale = [0,1,2]
+    grp_reps_scale = 0
     # Based or not on behavior
     ind_reps_base_values = true # [false,true]
     grp_reps_base_values = true # [false,true]
+    # Probability of interacting with outgroup
+    bias_values = 0.0:0.2:1.0
     # Probability of using group reps
     prob_values = 0.0:0.2:1.0
     # Rate of updating reps
-    rate_values = 1.0# 0.0:0.2:1.0
+    rate_values = 1.0 # 0.0:0.2:1.0
     # Costs of using individual reps
     cost_values = 0.0:0.02:0.1
     # Based or not on temselves
     ind_reps_src_values = true # [false,true]
-    grp_reps_src_values = [false,true]
+    grp_reps_src_values = true # [false,true]
     # Initial generations without averaging
     burn_in = 5_000
     # Repetitions and length
@@ -49,13 +51,14 @@ begin
     initial_repetition = 0
     generations = 50_000
     # Title
-    simulation_title = "scale-prob-rate-cost"
+    simulation_title = "scale-bias-prob-cost"
     # Parameters
-    parameters = [ (prob,rate,cost,ir,gr,ib,gb,is,gs) for
+    parameters = [ (bias,prob,rate,cost,ir,gr,ib,gb,is,gs) for
         ir in [ind_reps_scale...],
         gr in [grp_reps_scale...],
         ib in [ind_reps_base_values...],
         gb in [grp_reps_base_values...],
+        bias in [bias_values...],
         prob in [prob_values...],
         rate in [rate_values...],
         cost in [cost_values...],
