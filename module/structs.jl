@@ -47,8 +47,10 @@ mutable struct Population
     reps_grp::Array{Int64, 2}           # matrix of group reputations
     prev_reps_ind::Array{Int64, 2}      # matrix of previous individual reputations
     prev_reps_grp::Array{Int64, 2}      # matrix of previous group reputations
-    actions::Array{Int64, 2}            # matrix of actions
     fitness::Array{Float64, 1}          # array of fitness
+    actions::Array{Int64, 2}            # matrix of actions
+    interactions::Array{Float64, 2}     # matrix of interactions of last generation
+    out_bias::Float64                   # interaction bias towards out-group memebers
     probs::Array{Float64, 1}            # array of probs of acting using group reps
     rates::Array{Float64, 1}            # array of rates of updating group reps
     costs::Array{Float64, 1}            # array of costs of using individual reps

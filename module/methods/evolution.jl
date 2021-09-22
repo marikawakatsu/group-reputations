@@ -59,7 +59,7 @@ function _ind_reputation(
     # Based on behavior
     if pop.ind_reps_base[i]
         # Random recipient
-        k = 1:pop.N |> sample
+        k = (pop.interactions[j,:] .== 1) |> findall |> sample
         # Action of the donor
         a = pop.actions[j,k]
         # Individual or Group reputation of the recipient
@@ -93,7 +93,7 @@ function _grp_reputation(
         # Random donor from the group
         j = (pop.membership .== g) |> findall |> sample
         # Random recipient
-        k = 1:pop.N |> sample
+        k = (pop.interactions[j,:] .== 1) |> findall |> sample
         # Action of the donor
         a = pop.actions[j,k]
         # Group or Individual reputation of the recipient
@@ -234,29 +234,38 @@ function update_actions_and_fitness!(
         s_i, s_j = pop.strategies[[i,j]]
         # Group memberships
         g_i, g_j = pop.membership[[i,j]]
-        # Individual reputations
-        r_ij = pop.reps_ind[i,j]
-        r_ji = pop.reps_ind[j,i]
-        # Group reputations
-        g_ij = pop.reps_grp[i,g_j]
-        g_ji = pop.reps_grp[j,g_i]
-        # Determine the action of i towards j
-        a_ij, c_ij = rand() < pop.probs[i] ? (_action(s_i,g_ij),0) : (_action(s_i,r_ij),1)
-        a_ji, c_ji = rand() < pop.probs[j] ? (_action(s_j,g_ji),0) : (_action(s_j,r_ji),1)
-        # Performance error
-        rand() < pop.game.u_p && (a_ij = 0)
-        rand() < pop.game.u_p && (a_ji = 0)
-        # Save
-        pop.actions[i,j] = a_ij
-        pop.actions[j,i] = a_ji
-        # Cost only for DISC
-        c_ij *= pop.strategies[i]==3
-        c_ji *= pop.strategies[j]==3
-        # Fitness
-        pop.fitness[i] += pop.game.b * a_ji - pop.game.c * a_ij - pop.costs[i] * c_ij
-        pop.fitness[j] += pop.game.b * a_ij - pop.game.c * a_ji - pop.costs[j] * c_ji
+        # Probability of interact with out-group
+        if (g_i == g_j) || ( g_i!==g_j && rand() < pop.out_bias )
+            # Register actual interaction
+            pop.interactions[i,j] = 1
+            pop.interactions[j,i] = 1
+            # Individual reputations
+            r_ij = pop.reps_ind[i,j]
+            r_ji = pop.reps_ind[j,i]
+            # Group reputations
+            g_ij = pop.reps_grp[i,g_j]
+            g_ji = pop.reps_grp[j,g_i]
+            # Determine the action of i towards j
+            a_ij, c_ij = rand() < pop.probs[i] ? (_action(s_i,g_ij),0) : (_action(s_i,r_ij),1)
+            a_ji, c_ji = rand() < pop.probs[j] ? (_action(s_j,g_ji),0) : (_action(s_j,r_ji),1)
+            # Performance error
+            rand() < pop.game.u_p && (a_ij = 0)
+            rand() < pop.game.u_p && (a_ji = 0)
+            # Save
+            pop.actions[i,j] = a_ij
+            pop.actions[j,i] = a_ji
+            # Cost only for DISC
+            c_ij *= pop.strategies[i]==3
+            c_ji *= pop.strategies[j]==3
+            # Payoff of interaction
+            pop.fitness[i] += pop.game.b * a_ji - pop.game.c * a_ij - pop.costs[i] * c_ij
+            pop.fitness[j] += pop.game.b * a_ij - pop.game.c * a_ji - pop.costs[j] * c_ji
+        end
     end
-    pop.fitness /= pop.N
+    # Average fitness across interactions
+    for i in 1:pop.N
+        pop.fitness[i] /= sum(pop.interactions[i,:])
+    end
 end
 
 """

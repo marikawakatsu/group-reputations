@@ -50,6 +50,7 @@ function random_population(
     norm = "SJ",
     all_strategies = [1,2,3],
     group_sizes = [0.5, 0.5],
+    out_bias = 1.0,
     prob_values = 0.5,
     rate_values = 1.0,
     cost_values = 0.0,
@@ -120,6 +121,7 @@ function random_population(
         end
     end
     actions             = sample_parameters((N, N))
+    interactions        = sample_parameters((N, N))
     fitness             = sample_parameters( N, 0.0)
     # Set generation count
     generation = 0
@@ -133,8 +135,8 @@ function random_population(
         strategies, membership,
         reps_ind, reps_grp,
         prev_reps_ind, prev_reps_grp,
-        actions, fitness,
-        probs, rates, costs, generation
+        fitness, actions, interactions,
+        out_bias, probs, rates, costs, generation
         )
 end
 
@@ -157,6 +159,7 @@ function run_simulations(
             social_norms = "SJ",
             all_strategies = [1,2,3],
             group_sizes = [0.5, 0.5],
+            bias_values = 1.0,
             prob_values = 0.5,
             rate_values = 1.0,
             cost_values = 0.0,
@@ -172,8 +175,9 @@ function run_simulations(
 
 
     reps = initial_repetition:(initial_repetition+repetitions-1)
-    index = [ (r,norm,prob,rate,cost,ir,gr,ib,gb,is,gs) for  r in reps,
+    index = [ (r,norm,bias,prob,rate,cost,ir,gr,ib,gb,is,gs) for  r in reps,
                                                 norm in [social_norms...],
+                                                bias in [bias_values...],
                                                 prob in [prob_values...],
                                                 rate in [rate_values...],
                                                 cost in [cost_values...],
@@ -185,7 +189,7 @@ function run_simulations(
                                                 gs in [grp_reps_src_values...]][:]
 
     @sync @distributed for i in index
-        (r,norm,prob,rate,cost,ir,gr,ib,gb,is,gs) = i
+        (r,norm,bias,prob,rate,cost,ir,gr,ib,gb,is,gs) = i
         # Parameters path
         path  = "results/"*
                 "$simulation_title/"*
@@ -193,7 +197,7 @@ function run_simulations(
                 "type$(Int(ir))$(Int(gr))-"*
                 "base$(Int(ib))$(Int(gb))-"*
                 "src$(Int(is))$(Int(gs))-"*
-                "prob$prob-rate$rate-cost$cost"
+                "bias$bias-prob$prob-rate$rate-cost$cost"
         !ispath(path) && mkpath(path)
         # Files
         pop_file = path * "/pop_$r.jld"
@@ -204,7 +208,7 @@ function run_simulations(
             game = Game(game_pars...)
             # Get Population
             pop  = random_population( N, game, norm, all_strategies, group_sizes,
-                                    prob, rate, cost, ir, gr, ib, gb, is, gs)
+                                    bias, prob, rate, cost, ir, gr, ib, gb, is, gs)
             # Burn in generations
             [ evolve!(pop) for _ in burn_in ]
             pop.generation = 0
@@ -241,6 +245,6 @@ function run_simulations(
         ">>  $norm  |  "*
         "ind : $(types[Int(ir)+1]) - $(bases[Int(ib)+1]) - $(sources[Int(is)+1])  |  "*
         "grp : $(types[Int(gr)+1]) - $(bases[Int(gb)+1]) - $(sources[Int(gs)+1])  |  "*
-        "prob : $prob  |  rate : $rate  |  cost : $cost" |> println
+        "bias : $bias  |  prob : $prob  |  rate : $rate  |  cost : $cost" |> println
     end
 end
