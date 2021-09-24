@@ -51,7 +51,7 @@ begin
     initial_repetition = 0
     generations = 50_000
     # Title
-    simulation_title = "scale-bias-prob-cost"
+    simulation_title = "DISC-scale-prob-cost"
     # Parameters
     parameters = [ (bias,prob,rate,cost,ir,gr,ib,gb,is,gs) for
         ir in [ind_reps_scale...],
