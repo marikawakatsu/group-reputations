@@ -25,6 +25,7 @@ module GroupReputations
 
     include("./module/methods/extractor.jl")
     export extract_data
+    export extract_data_DISC
     ### !!! ADD OTHER FUNCTIONS HERE !!! ###
 
     include("./module/methods/tracker.jl")

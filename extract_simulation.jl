@@ -5,5 +5,5 @@ any(LOAD_PATH .== pwd()) || push!(LOAD_PATH, pwd())
 @everywhere include("GroupReputations.jl")
 @everywhere using .GroupReputations
 
-simulation_title = "scale-bias-prob-cost"
-extract_data(simulation_title)
+simulation_title = "DISC-scale-prob-cost"
+extract_data_DISC(simulation_title)
