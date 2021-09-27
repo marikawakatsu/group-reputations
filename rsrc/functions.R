@@ -83,3 +83,20 @@ cool_warm <- function(n) {
   colormap <- grDevices::rgb(colormap[,1], colormap[,2], colormap[,3])
   colormap
 }
+
+# function to check nos. and types of of distinct cases
+casecounter <- function(simdata){
+  casecount <- simdata %>% 
+    group_by(N, norm, ind_scale, grp_scale, ind_base, grp_base, ind_src_ind, grp_src_grp) %>% 
+    summarize(COUNT = n())
+  
+  return(casecount)
+}
+
+# printing function
+print_figure <- function(filename = "NONE"){
+  dev.off()
+  Sys.sleep(1)
+  # print("done")
+  print(paste0(filename, " -- DONE"))
+}
