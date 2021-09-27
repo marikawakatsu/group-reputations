@@ -382,27 +382,28 @@ for(norm in norms){
     width       <- 6
     height      <- 5.5
     
-    if( length(rates) > 1 ){
+    if( length(rates) > 2 ){
       for(cost in costs){
-        # png(filename = paste0("plots/", "cooperation", "_heatmap_", norm, "_cost_", cost, "_grpsrcgrp_", grp_src_grp, tag,
-        #                       "_", format(Sys.Date(), format="%y%m%d"), ".png"),
-        #     width = width, height = height, units = "in", res = 600)
-        # print(plot_heatmap_fixed_cost(simdata_sub, norm, metric, label, cost, grp_src_grp, TRUE))
-        # print_figure()
+        filename <- paste0("plots/", "cooperation", "_heatmap_", norm, "_cost_", cost, "_grpsrcgrp_", grp_src_grp, tag,
+                           "_", format(Sys.Date(), format="%y%m%d"), ".png")
+        png(filename = filename,
+            width = width, height = height, units = "in", res = 600)
+        print(plot_heatmap_fixed_cost(simdata_sub, norm, metric, label, cost, grp_src_grp, FALSE))
+        print_figure(filename)
       }
+      rm(cost)
     }
-    if( length(costs) > 1 ){
+    if( length(costs) > 2 ){
       for(rate in rates){
-        # png(filename = paste0("plots/", "cooperation", "_heatmap_", norm, "_rate_", rate, "_grpsrcgrp_", grp_src_grp, tag,
-        #                       "_", format(Sys.Date(), format="%y%m%d"), ".png"),
-        #     width = width, height = height, units = "in", res = 600)
-        # print(plot_heatmap_fixed_rate(simdata_sub, norm, metric, label, rate, grp_src_grp, FALSE))
-        # print_figure()
+        filename <- paste0("plots/", "cooperation", "_heatmap_", norm, "_rate_", rate, "_grpsrcgrp_", grp_src_grp, tag,
+                           "_", format(Sys.Date(), format="%y%m%d"), ".png")
+        png(filename = filename,
+            width = width, height = height, units = "in", res = 600)
+        print(plot_heatmap_fixed_rate(simdata_sub, norm, metric, label, rate, grp_src_grp, FALSE))
+        print_figure(filename)
       }
+      rm(rate)
     }
-
-    rm(cost)
-    rm(rate)
     
     for(grp_scale in c(0,1,2)){
   
@@ -415,55 +416,60 @@ for(norm in norms){
       rate        <- 1.0
       grp_src_grp <- 0
 
-      # png(filename = paste0("plots/", "cooperation_bygroup", "_line_", norm, "_rate_", rate, "_grp_", grp_scale, "_grpsrcgrp_", grp_src_grp, tag,
-      #                       "_", format(Sys.Date(), format="%y%m%d"), ".png"),
-      #     width = width, height = height, units = "in", res = 600)
-      # print(plot_line_fixrate(simdata_sub, norm, metric, label, rate, grp_src_grp, FALSE))
-      # print_figure()
-
+      filename    <- paste0("plots/", "cooperation_bygroup", "_line_", norm, "_rate_", rate, "_grp_", grp_scale, 
+                            "_grpsrcgrp_", grp_src_grp, tag, "_", format(Sys.Date(), format="%y%m%d"), ".png")
+      png(filename = filename,
+          width = width, height = height, units = "in", res = 600)
+      print(plot_line_fixrate(simdata_sub, norm, metric, label, rate, grp_scale, grp_src_grp, TRUE))
+      print_figure(filename)
+      
       # strat frequencies
       simdata_sub <- simdata_freq
       metric      <- measure_freq
       label       <- "Average\nfrequency"
-
-      # png(filename = paste0("plots/","freq", "_line_", norm, "_rate_", rate, "_grp_", grp_scale, "_grpsrcgrp_", grp_src_grp, tag,
-      #                       "_", format(Sys.Date(), format="%y%m%d"), ".png"),
-      #     width = width, height = height, units = "in", res = 600)
-      # print(plot_line_fixrate(simdata_sub, norm, metric, label, rate, grp_src_grp, FALSE))
-      # print_figure()
-
+      
+      filename    <- paste0("plots/","freq", "_line_", norm, "_rate_", rate, "_grp_", grp_scale,
+                            "_grpsrcgrp_", grp_src_grp, tag, "_", format(Sys.Date(), format="%y%m%d"), ".png")
+      png(filename = filename,
+          width = width, height = height, units = "in", res = 600)
+      print(plot_line_fixrate(simdata_sub, norm, metric, label, rate, grp_scale, grp_src_grp, FALSE))
+      print_figure(filename)
+      
       # indiv reputations
       simdata_sub <- simdata_rep_ind
       metric      <- measure_rep_ind
       label       <- "Fraction good"
-
-      # png(filename = paste0("plots/","rep_ind", "_line_", norm, "_rate_", rate, "_grp_", grp_scale, "_grpsrcgrp_", grp_src_grp, tag,
-      #                       "_", format(Sys.Date(), format="%y%m%d"), ".png"),
-      #     width = width, height = height, units = "in", res = 600)
-      # print(plot_line_fixrate(simdata_sub, norm, metric, label, rate, grp_src_grp, FALSE))
-      # print_figure()
-
+      
+      filename    <- paste0("plots/","rep_ind", "_line_", norm, "_rate_", rate, "_grp_", grp_scale, 
+                            "_grpsrcgrp_", grp_src_grp, tag, "_", format(Sys.Date(), format="%y%m%d"), ".png")
+      png(filename = filename,
+          width = width, height = height, units = "in", res = 600)
+      print(plot_line_fixrate(simdata_sub, norm, metric, label, rate, grp_scale, grp_src_grp, FALSE))
+      print_figure(filename)
+      
       # group reputations
       simdata_sub <- simdata_rep_grp
       metric      <- measure_rep_grp
       label       <- "Fraction good"
-
-      # png(filename = paste0("plots/","rep_grp", "_line_", norm, "_rate_", rate, "_grp_", grp_scale, "_grpsrcgrp_", grp_src_grp, tag,
-      #                       "_", format(Sys.Date(), format="%y%m%d"), ".png"),
-      #     width = width, height = height, units = "in", res = 600)
-      # print(plot_line_fixrate(simdata_sub, norm, metric, label, rate, grp_src_grp, FALSE))
-      # print_figure()
-
+      
+      filename    <- paste0("plots/","rep_grp", "_line_", norm, "_rate_", rate, "_grp_", grp_scale, 
+                            "_grpsrcgrp_", grp_src_grp, tag, "_", format(Sys.Date(), format="%y%m%d"), ".png")
+      png(filename = filename,
+          width = width, height = height, units = "in", res = 600)
+      print(plot_line_fixrate(simdata_sub, norm, metric, label, rate, grp_scale, grp_src_grp, FALSE))
+      print_figure(filename)
+      
       # fitnesses
       simdata_sub <- simdata_fitness
       metric      <- measure_fitness
       label       <- "Average fitness"
-  
-      png(filename = paste0("plots/","fitness", "_line_", norm, "_rate_", rate, "_grp_", grp_scale, "_grpsrcgrp_", grp_src_grp, tag,
-                            "_", format(Sys.Date(), format="%y%m%d"), ".png"),
+      
+      filename    <- paste0("plots/","fitness", "_line_", norm, "_rate_", rate, "_grp_", grp_scale, 
+                            "_grpsrcgrp_", grp_src_grp, tag, "_", format(Sys.Date(), format="%y%m%d"), ".png")
+      png(filename = filename,
           width = width, height = height, units = "in", res = 600)
-      print(plot_line_fixrate(simdata_sub, norm, metric, label, rate, grp_src_grp, FALSE))
-      print_figure()
+      print(plot_line_fixrate(simdata_sub, norm, metric, label, rate, grp_scale, grp_src_grp, FALSE))
+      print_figure(filename)
     }
   }
 }

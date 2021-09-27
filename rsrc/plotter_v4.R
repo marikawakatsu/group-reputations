@@ -432,12 +432,12 @@ for(norm in norms){
         metric      <- measure_freq
         label       <- "Average\nfrequency"
         
-        filename    <- paste0("plots/","freq", "_line_", norm, "_rate_", rate, "_grp_", grp_scale, 
-                              "_grpsrcgrp_", grp_src_grp, tag, "_", format(Sys.Date(), format="%y%m%d"), ".png")
-        png(filename = filename,
-            width = width, height = height, units = "in", res = 600)
-        print(plot_line_fixrate(simdata_sub, norm, metric, label, rate, grp_scale, grp_src_grp, FALSE))
-        print_figure(filename)
+        # filename    <- paste0("plots/","freq", "_line_", norm, "_rate_", rate, "_grp_", grp_scale, 
+        #                       "_grpsrcgrp_", grp_src_grp, tag, "_", format(Sys.Date(), format="%y%m%d"), ".png")
+        # png(filename = filename,
+        #     width = width, height = height, units = "in", res = 600)
+        # print(plot_line_fixrate(simdata_sub, norm, metric, label, rate, grp_scale, grp_src_grp, FALSE))
+        # print_figure(filename)
         
         # indiv reputations
         simdata_sub <- simdata_rep_ind
