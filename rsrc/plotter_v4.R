@@ -1,6 +1,6 @@
 ################################################################################
 #
-# Script for basic plots, with DISC only
+# Script for basic plots
 #
 ################################################################################
 
@@ -15,19 +15,20 @@ setwd("~/Documents/GitHub/group-reputations/")
 ########################
 # path to the data directory
 data_dir     <- "~/Dropbox (Princeton)/Stereotypes_results/group-reputations/"
-data_sub_dir <- "DISC-scale-prob-cost"
+# data_sub_dir <- "DISC-scale-prob-cost"
+data_sub_dir <- "scale-prob-rate-cost"
 
 # load and merge data
-tag       <- "_DISC" # "_lowalpha"
+# tag       <- "_DISC"
+tag       <- "_lowalpha" 
 simdata_m <- read.csv( paste0(data_dir, data_sub_dir, "/", "m_data", tag, ".csv"), header = TRUE)
 simdata_s <- read.csv( paste0(data_dir, data_sub_dir, "/", "s_data", tag, ".csv"), header = TRUE)
 simdata   <- rbind(simdata_m, simdata_s)
-# simdata   <- simdata_m
 
 casecount <- casecounter(simdata)
-simdata   <- simdata %>% 
-  group_by(N, norm, ind_scale, grp_scale, ind_base, grp_base, ind_src_ind, grp_src_grp) %>%
-  slice_head( n = min(casecount$COUNT) )
+# simdata   <- simdata %>% 
+#   group_by(N, norm, ind_scale, grp_scale, ind_base, grp_base, ind_src_ind, grp_src_grp) %>%
+#   slice_head( n = min(casecount$COUNT) )
 
 ##########################
 # PREP DATA FOR PLOTTING
@@ -61,18 +62,22 @@ compute_mean_vars <- function( simdata_bymeasure, variables ){
   # add interpretable labels
   simdata_mean$ind_base_label[simdata_mean$ind_base == 0] <- "Individual reps random"
   simdata_mean$ind_base_label[simdata_mean$ind_base == 1] <- "Individual reps based on behavior"
-  simdata_mean$grp_base_label[simdata_mean$grp_base == 0] <- "Group reps random"
-  simdata_mean$grp_base_label[simdata_mean$grp_base == 1] <- "Group reps based on behavior"
+  simdata_mean$grp_base_label[simdata_mean$grp_base == 0] <- "Stereotypes random"
+  simdata_mean$grp_base_label[simdata_mean$grp_base == 1] <- "Stereotypes based on behavior"
   simdata_mean$ind_scale_label[simdata_mean$ind_scale == 0] <- "Individual reps public"
   simdata_mean$ind_scale_label[simdata_mean$ind_scale == 1] <- "Individual reps by group"
   simdata_mean$ind_scale_label[simdata_mean$ind_scale == 2] <- "Individual reps private"
-  simdata_mean$grp_scale_label[simdata_mean$grp_scale == 0] <- "Group reps public"
-  simdata_mean$grp_scale_label[simdata_mean$grp_scale == 1] <- "Group reps by group"
-  simdata_mean$grp_scale_label[simdata_mean$grp_scale == 2] <- "Group reps private"
+  simdata_mean$grp_scale_label[simdata_mean$grp_scale == 0] <- "Stereotypes public"
+  simdata_mean$grp_scale_label[simdata_mean$grp_scale == 1] <- "Stereotypes by group"
+  simdata_mean$grp_scale_label[simdata_mean$grp_scale == 2] <- "Stereotypes private"
   simdata_mean$ind_src_label[simdata_mean$ind_src_ind == 0] <- "Ind reps based on ind reps"
-  simdata_mean$ind_src_label[simdata_mean$ind_src_ind == 1] <- "Ind reps based on grp reps"
-  simdata_mean$grp_src_label[simdata_mean$grp_src_grp == 0] <- "Grp reps based on ind reps"
-  simdata_mean$grp_src_label[simdata_mean$grp_src_grp == 1] <- "Grp reps based on grp reps"
+  simdata_mean$ind_src_label[simdata_mean$ind_src_ind == 1] <- "Ind reps based on stereotypes"
+  simdata_mean$grp_src_label[simdata_mean$grp_src_grp == 0] <- "Stereotypes based on ind reps"
+  simdata_mean$grp_src_label[simdata_mean$grp_src_grp == 1] <- "Stereotypes based on stereotypes"
+  simdata_mean$grp_scale_label <- factor(simdata_mean$grp_scale_label, 
+                                         levels = c("Stereotypes private", "Stereotypes by group", "Stereotypes public"))
+  simdata_mean$ind_scale_label <- factor(simdata_mean$ind_scale_label, 
+                                         levels = c("Individual reps public", "Individual reps by group", "Individual reps private"))
   
   # only for reputations
   # simdata_mean$acting_group[simdata_mean$Metric %in% c("reps_ind_11", "reps_ind_12", "reps_grp_11", "reps_grp_12")] <- "Group 1"
@@ -107,7 +112,7 @@ plot_heatmap_fixed_cost <- function(simdata_sub, norm = "SJ", metric = "cooperat
   
   if(max(subdata$cost) < 0.11){
     ybreaks = seq(0, 0.1, 0.02)
-    ylimits = c(-0.01, 0.11)
+    ylimits = c(-0.01, 0.111)
   }else if(max(subdata$cost) < 1.1){
     ybreaks = seq(0, 1.0, 0.2)
     ylimits = c(-0.1, 1.1)
@@ -143,7 +148,7 @@ plot_heatmap_fixed_cost <- function(simdata_sub, norm = "SJ", metric = "cooperat
                          limit    = c(0., 1.),
                          space    = "Lab",
                          name     = label) +
-    labs(x = "Probability of DISC using group reputations (p)",
+    labs(x = "Probability of DISC using stereotypes (p)",
          y = "Probability of group reputation update per round (λ)") +
     geom_tile( show.legend = TRUE ) + 
     facet_grid(ind_scale_label ~ grp_scale_label, 
@@ -166,7 +171,7 @@ plot_heatmap_fixed_rate <- function(simdata_sub, norm = "SJ", metric = "cooperat
   
   if(max(subdata$cost) < 0.11){
     ybreaks = seq(0, 0.1, 0.02)
-    ylimits = c(-0.01, 0.11)
+    ylimits = c(-0.01, 0.111)
   }else if(max(subdata$cost) < 1.1){
     ybreaks = seq(0, 1.0, 0.2)
     ylimits = c(-0.1, 1.1)
@@ -202,7 +207,7 @@ plot_heatmap_fixed_rate <- function(simdata_sub, norm = "SJ", metric = "cooperat
                          limit    = c(0., 1.),
                          space    = "Lab",
                          name     = label) +
-    labs(x = "Probability of DISC using group reputations (p)",
+    labs(x = "Probability of DISC using stereotypes (p)",
          y = "Cost of using individual reputations (α)") +
     geom_tile( show.legend = TRUE ) +
     facet_grid(ind_scale_label ~ grp_scale_label,
@@ -278,7 +283,7 @@ plot_line_fixcost <- function(simdata_sub, norm = "SJ", metric = measure_coop[2:
     geom_errorbar(aes(ymin = Mean - SD, ymax = Mean + SD), width = 0, size = 0.3) +
     geom_line(size = 0.4, alpha = 1) +
     geom_point(size = 1.1, alpha = 1, stroke = 0.5) + #, shape = 21, fill = "white") +
-    labs(x = "Probability of DISC using group reputations (p)",
+    labs(x = "Probability of DISC using stereotypes (p)",
          y = ylabel) +
     facet_grid(ind_scale_label ~ cost_label, 
                space="free", scales="free") +
@@ -353,7 +358,7 @@ plot_line_fixrate <- function(simdata_sub, norm = "SJ", metric = measure_coop[2:
     geom_errorbar(aes(ymin = Mean - SD, ymax = Mean + SD), width = 0, size = 0.3) +
     geom_line(size = 0.4, alpha = 1) +
     geom_point(size = 1.1, alpha = 1, stroke = 0.5) + #, shape = 21, fill = "white") +
-    labs(x = "Probability of DISC using group reputations (p)",
+    labs(x = "Probability of DISC using stereotypes (p)",
          y = ylabel) +
     facet_grid(ind_scale_label ~ cost_label, 
                space="free", scales="free") +
@@ -451,7 +456,7 @@ for(norm in norms){
         print(plot_line_fixrate(simdata_sub, norm, metric, label, rate, grp_scale, grp_src_grp, FALSE))
         print_figure(filename)
         
-        # group reputations
+        # stereotypes
         simdata_sub <- simdata_rep_grp
         metric      <- measure_rep_grp
         label       <- "Fraction good"

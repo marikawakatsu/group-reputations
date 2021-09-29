@@ -74,6 +74,9 @@ multiplot <- function(..., plotlist=NULL, file, cols=1, layout=NULL) {
   }
 }
 
+#########################
+# Colors
+#########################
 cool_warm <- function(n) {
   colormap <- Rgnuplot:::GpdivergingColormap(seq(0,1,length.out=n),
                                              rgb1 = colorspace::sRGB( 0.230, 0.299, 0.754),
@@ -84,7 +87,9 @@ cool_warm <- function(n) {
   colormap
 }
 
-# function to check nos. and types of of distinct cases
+#########################
+# Function to check nos. and types of of distinct cases
+#########################
 casecounter <- function(simdata){
   casecount <- simdata %>% 
     group_by(N, norm, ind_scale, grp_scale, ind_base, grp_base, ind_src_ind, grp_src_grp) %>% 
@@ -92,11 +97,13 @@ casecounter <- function(simdata){
   
   return(casecount)
 }
-
+#########################
 # printing function
+#########################
 print_figure <- function(filename = "NONE"){
   dev.off()
   Sys.sleep(1)
   # print("done")
   print(paste0(filename, " -- DONE"))
 }
+
