@@ -299,13 +299,6 @@ plot_line_fixrate <- function(simdata_sub, norm = "SJ", metric = measure_coop[2:
 ##############
 # SAVE PLOTS
 ##############
-# printing function
-print_figure <- function(){
-  dev.off()
-  Sys.sleep(1)
-  print("done")
-}
-
 # test plots
 norms       <- unique(simdata$norm)
 costs       <- unique(simdata$cost)
