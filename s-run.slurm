@@ -1,8 +1,6 @@
 #!/bin/bash
 #SBATCH --job-name=groupreps
-#SBATCH --nodes=1
-#SBATCH --ntasks=1
-#SBATCH --mem=16G
+#SBATCH --mem=32G
 #SBATCH --time=24:00:00
 #SBATCH --mail-type=all
 #SBATCH --mail-user=sm75@princeton.edu

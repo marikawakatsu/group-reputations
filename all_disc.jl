@@ -34,13 +34,13 @@ begin
     ind_reps_base_values = true # [false,true]
     grp_reps_base_values = true # [false,true]
     # Probability of interacting with outgroup
-    bias_values = 1.0 # 0.0:0.2:1.0
+    bias_values = 0.0:0.2:1.0
     # Probability of using group reps
     prob_values = 0.0:0.2:1.0
     # Rate of updating reps
-    rate_values = [0.0,1.0] # 0.0:0.2:1.0
+    rate_values = 1.0 # 0.0:0.2:1.0
     # Costs of using individual reps
-    cost_values = 0.0:0.02:0.1
+    cost_values = 0.0 # :0.02:0.1
     # Based or not on temselves
     ind_reps_src_values = true # [false,true]
     grp_reps_src_values = true # [false,true]
@@ -51,7 +51,7 @@ begin
     initial_repetition = 0
     generations = 50_000
     # Title
-    simulation_title = "DISC-scale-prob-cost"
+    simulation_title = "DISC-scale-prob-bias"
     # Parameters
     parameters = [ (bias,prob,rate,cost,ir,gr,ib,gb,is,gs) for
         ir in [ind_reps_scale...],
