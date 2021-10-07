@@ -1,7 +1,7 @@
 # Methods to compute quantities using struct Population
 """
 Function to extract strategy frequencies
-    Returns a num_groups-by-num_strategies matrix 
+    Returns a num_groups-by-num_strategies matrix
     with entry (g,s) = frequency of strat s in group g
 """
 function get_frequencies(
@@ -12,7 +12,7 @@ end
 
 """
 Function to extract cooperation
-    Returns a num_groups-by-num_groups matrix 
+    Returns a num_groups-by-num_groups matrix
     with entry (g1,g2) = fraction of g1-g2 interactions that are cooperative
 """
 function get_cooperation(
@@ -23,7 +23,7 @@ end
 
 """
 Function to extract average fitness
-    Returns a num_groups-by-num_strategies matrix 
+    Returns a num_groups-by-num_strategies matrix
     with entry (g,s) = average fitness of strat s in group g
 """
 function get_avg_fitness(
@@ -34,7 +34,7 @@ end
 
 """
 Function to extract average individual and group reputations
-    Returns a num_groups-by-num_groups matrix 
+    Returns a num_groups-by-num_groups matrix
     with entry (g1,g2) = average reputation (ind/grp) of g2 as viewd by g1
 """
 function get_reps_ind(
@@ -49,4 +49,18 @@ function get_reps_grp(
     return [ mean(pop.reps_grp[ pop.membership .== g1, g2 ]) for g1 in pop.all_groups, g2 in pop.all_groups ]
 end
 
-
+"""
+Function to measure the average agreement of the individual reputations
+within the population
+    Returns a float
+"""
+function get_agreement_ind(
+    pop::Population
+    )
+    return mean(1 .- pairwise(Hamming(), pop.reps_ind, dims=1)./pop.N)
+end
+function get_agreement_grp(
+    pop::Population
+    )
+    return mean(1 .- pairwise(Hamming(), pop.reps_grp, dims=1)./pop.N)
+end

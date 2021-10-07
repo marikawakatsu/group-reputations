@@ -68,6 +68,8 @@ mutable struct Tracker
     avg_reps_ind::Array{Float64, 2}    # a num_groups-by_num_groups matrix tracking average individual reputations per group
     avg_fitness::Array{Float64, 2}     # a num_groups-by-num_strategies matrix tracking average fitness of each strategy per group
     avg_global_cooperation::Float64    # a float tracking average global cooperation
+    avg_agreement_ind::Float64         # a float tracking average agreement of individual reputations
+    avg_agreement_grp::Float64         # a float tracking average agreement of groupal reputations
     population_path::String            # path to the stored population
 
 end

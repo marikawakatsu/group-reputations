@@ -17,6 +17,8 @@ function init_tracker(
     avg_reps_ind           = get_reps_ind(pop)
     avg_fitness[inx]       = get_avg_fitness(pop)[inx]
     avg_global_cooperation = mean(pop.actions)
+    avg_agreement_ind      = get_agreement_ind(pop)
+    avg_agreement_grp      = get_agreement_grp(pop)
 
     # Register initial generation
     initial_generation = pop.generation+1
@@ -35,6 +37,8 @@ function init_tracker(
                     avg_reps_ind,
                     avg_fitness,
                     avg_global_cooperation,
+                    avg_agreement_ind,
+                    avg_agreement_grp,
                     population_path
                 )
 end
@@ -54,6 +58,8 @@ function track!(
     tracker.avg_reps_ind           += (get_reps_ind(pop)-tracker.avg_reps_ind) / pop.generation
     tracker.avg_fitness[inx]       += ( (get_avg_fitness(pop)-tracker.avg_fitness) / pop.generation )[inx]
     tracker.avg_global_cooperation += (mean(pop.actions)-tracker.avg_global_cooperation) / pop.generation
+    tracker.avg_agreement_ind        += (get_agreement_ind(pop)-tracker.avg_agreement_ind) / pop.generation
+    tracker.avg_agreement_grp        += (get_agreement_grp(pop)-tracker.avg_agreement_grp) / pop.generation
     # Count generation
     tracker.final_generation += 1
 end
