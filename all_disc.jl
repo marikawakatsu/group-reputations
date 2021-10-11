@@ -54,7 +54,7 @@ begin
     initial_repetition = 0
     generations = 50_000
     # Title
-    simulation_title = "test"
+    simulation_title = "DISC-scale-prob-recip"
     # Parameters
     parameters = [ (norm,bias,prob,rate,cost,ir,gr,im,gm,ib,gb,is,gs)
                             for norm in [social_norms...],
@@ -81,5 +81,3 @@ end
         parameters[id]...
         )
 "DONE!" |> println
-
-extract_data_DISC(simulation_title)
