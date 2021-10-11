@@ -58,8 +58,20 @@ function _ind_reputation(
 
     # Based on behavior
     if pop.ind_reps_base[i]
-        # Random recipient
-        k = (pop.interactions[j,:] .== 1) |> findall |> sample
+        # Membership of observer
+        g_i = pop.membership[i]
+        # Random membership of recipient
+        if pop.ind_recipient_membership == 0
+            g_k = 1:pop.N
+        # Same group as observer
+        elseif pop.ind_recipient_membership == 1
+            g_k = (pop.membership .== g_i) |> findall
+        # Different group as observer
+        elseif pop.ind_recipient_membership == 2
+            g_k = (pop.membership .!= g_i) |> findall
+        end
+        # Select recipient
+        k = (pop.interactions[j,g_k] .== 1) |> findall |> sample
         # Action of the donor
         a = pop.actions[j,k]
         # Individual or Group reputation of the recipient
@@ -85,15 +97,27 @@ Group Reputation
 function _grp_reputation(
     pop::Population,
     i::Int64,
-    g::Int64
+    g_j::Int64
     )
 
     # Based on behavior
     if pop.grp_reps_base[i]
         # Random donor from the group
-        j = (pop.membership .== g) |> findall |> sample
+        j = (pop.membership .== g_j) |> findall |> sample
+        # Membership of observer
+        g_i = pop.membership[i]
+        # Random membership of recipient
+        if pop.grp_recipient_membership == 0
+            g_k = 1:pop.N
+        # Same group as observer
+        elseif pop.grp_recipient_membership == 1
+            g_k = (pop.membership .== g_i) |> findall
+        # Different group as observer
+        elseif pop.grp_recipient_membership == 2
+            g_k = (pop.membership .!= g_i) |> findall
+        end
         # Random recipient
-        k = (pop.interactions[j,:] .== 1) |> findall |> sample
+        k = (pop.interactions[j,g_k] .== 1) |> findall |> sample
         # Action of the donor
         a = pop.actions[j,k]
         # Group or Individual reputation of the recipient
@@ -139,7 +163,7 @@ function update_individual_reputations!(
             g_i =  (pop.membership .== g) |> findall
             # Sample observer
             i = g_i |> sample
-            # Both views
+            # Individual reputation
             r = _ind_reputation(pop,i,j)
             # Assignment error
             rand() < pop.game.u_a && (r = 1-r)
@@ -175,17 +199,17 @@ function update_group_reputations!(
     pop.reps_grp .= 0
     # Public
     if pop.grp_reps_scale == 0
-        for g in 1:pop.num_groups
+        for g_j in 1:pop.num_groups
             # Random observer
             i = 1:pop.N |> sample
             # Reputation of group
-            r = _grp_reputation(pop,i,g)
+            r = _grp_reputation(pop,i,g_j)
             # Assignment error
             rand() < pop.game.u_a && (r = 1-r)
             # Rate of updating
-            r = rand() < pop.rates[i] ? r : pop.prev_reps_grp[i,g]
+            r = rand() < pop.rates[i] ? r : pop.prev_reps_grp[i,g_j]
             # Update broadcast
-            pop.reps_grp[:,g] .= r
+            pop.reps_grp[:,g_j] .= r
         end
     # Groupal
     elseif pop.grp_reps_scale == 1
@@ -205,15 +229,15 @@ function update_group_reputations!(
         end
     # Private
     elseif pop.grp_reps_scale == 2
-        for i in 1:pop.N, g in 1:pop.num_groups
-            # Reputation of j in eyes of i
-            r = _grp_reputation(pop,i,g)
+        for i in 1:pop.N, g_j in 1:pop.num_groups
+            # Reputation of group in eyes of i
+            r = _grp_reputation(pop,i,g_j)
             # Assignment error
             rand() < pop.game.u_a && (r = 1-r)
             # Rate of updating
-            r = rand() < pop.rates[i] ? r : pop.prev_reps_grp[i,g]
+            r = rand() < pop.rates[i] ? r : pop.prev_reps_grp[i,g_j]
             # Update
-            pop.reps_grp[i,g] = r
+            pop.reps_grp[i,g_j] = r
         end
     end
 end

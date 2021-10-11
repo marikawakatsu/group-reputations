@@ -56,6 +56,8 @@ function random_population(
     cost_values = 0.0,
     ind_reps_scale = 0,      # public
     grp_reps_scale = 0,      # public
+    ind_recipient_membership = 1,   # random
+    grp_recipient_membership = 1,   # random
     ind_reps_base_values = true,     # based on behavior
     grp_reps_base_values = true,     # based on behavior
     ind_reps_src_ind_values = true,  # based on ind rep
@@ -130,8 +132,10 @@ function random_population(
         N, game, norm,
         num_strategies, all_strategies,
         num_groups, all_groups, group_sizes,
-        ind_reps_scale, ind_reps_base, ind_reps_src_ind,
-        grp_reps_scale, grp_reps_base, grp_reps_src_grp,
+        ind_reps_scale, ind_reps_base,
+        ind_reps_src_ind, ind_recipient_membership,
+        grp_reps_scale, grp_reps_base,
+        grp_reps_src_grp, grp_recipient_membership,
         strategies, membership,
         reps_ind, reps_grp,
         prev_reps_ind, prev_reps_grp,
@@ -165,6 +169,8 @@ function run_simulations(
             cost_values = 0.0,
             ind_reps_scale = 0,
             grp_reps_scale = 0,
+            ind_recipient_membership = 1,
+            grp_recipient_membership = 1,
             ind_reps_base_values = true,
             grp_reps_base_values = true,
             ind_reps_src_values = true,
@@ -175,7 +181,7 @@ function run_simulations(
 
 
     reps = initial_repetition:(initial_repetition+repetitions-1)
-    index = [ (r,norm,bias,prob,rate,cost,ir,gr,ib,gb,is,gs) for  r in reps,
+    index = [ (r,norm,bias,prob,rate,cost,ir,gr,im,gm,ib,gb,is,gs) for  r in reps,
                                                 norm in [social_norms...],
                                                 bias in [bias_values...],
                                                 prob in [prob_values...],
@@ -183,18 +189,21 @@ function run_simulations(
                                                 cost in [cost_values...],
                                                 ir in [ind_reps_scale...],
                                                 gr in [grp_reps_scale...],
+                                                im in [ind_recipient_membership...],
+                                                gm in [grp_recipient_membership...],
                                                 ib in [ind_reps_base_values...],
                                                 gb in [grp_reps_base_values...],
                                                 is in [ind_reps_src_values...],
                                                 gs in [grp_reps_src_values...]][:]
 
     @sync @distributed for i in index
-        (r,norm,bias,prob,rate,cost,ir,gr,ib,gb,is,gs) = i
+        (r,norm,bias,prob,rate,cost,ir,gr,im,gm,ib,gb,is,gs) = i
         # Parameters path
         path  = "results/"*
                 "$simulation_title/"*
                 "norm$norm-"*
                 "type$(Int(ir))$(Int(gr))-"*
+                "recip$(Int(im))$(Int(gm))-"*
                 "base$(Int(ib))$(Int(gb))-"*
                 "src$(Int(is))$(Int(gs))-"*
                 "bias$bias-prob$prob-rate$rate-cost$cost"
@@ -208,7 +217,7 @@ function run_simulations(
             game = Game(game_pars...)
             # Get Population
             pop  = random_population( N, game, norm, all_strategies, group_sizes,
-                                    bias, prob, rate, cost, ir, gr, ib, gb, is, gs)
+                                    bias, prob, rate, cost, ir, gr, im, gm, ib, gb, is, gs)
             # Burn in generations
             [ evolve!(pop) for _ in burn_in ]
             pop.generation = 0
@@ -242,9 +251,10 @@ function run_simulations(
         types = ["public ","groupal","private"]
         bases = ["random  ","behavior"]
         sources = ["other","self "]
+        recip = ["self","rand","other "]
         ">>  $norm  |  "*
-        "ind : $(types[Int(ir)+1]) - $(bases[Int(ib)+1]) - $(sources[Int(is)+1])  |  "*
-        "grp : $(types[Int(gr)+1]) - $(bases[Int(gb)+1]) - $(sources[Int(gs)+1])  |  "*
+        "ind : $(types[Int(ir)+1]) - $(bases[Int(ib)+1]) - $(sources[Int(is)+1]) - $(recip[Int(im)+1])  |  "*
+        "grp : $(types[Int(gr)+1]) - $(bases[Int(gb)+1]) - $(sources[Int(gs)+1]) - $(recip[Int(gm)+1])  |  "*
         "bias : $bias  |  prob : $prob  |  rate : $rate  |  cost : $cost" |> println
     end
 end

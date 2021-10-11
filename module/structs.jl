@@ -36,10 +36,12 @@ mutable struct Population
     ind_reps_scale::Int32               # individual reputation type: public or private
     ind_reps_base::Array{Bool, 1}       # individuals reps are based on behavior (1) or not (0)
     ind_reps_src_ind::Array{Bool, 1}    # update individual reps based on individual (1) or group (0) reputation
+    ind_recipient_membership::Int32     # select recipient by membership with respect to observer (0) random, (1) same group, (2) different group
     # Group reputations
     grp_reps_scale::Int32               # group reputation type: public or private
     grp_reps_base::Array{Bool, 1}       # group reps are based on behavior (1) or not (0)
     grp_reps_src_grp::Array{Bool, 1}    # update group reps based on individual (0) or group (1) reputation
+    grp_recipient_membership::Int32     # select recipient by membership with respect to observer (0) random, (1) same group, (2) different group
     # Storage
     strategies::Array{Int64, 1}         # array of strategies
     membership::Array{Int64, 1}         # array of group memberships

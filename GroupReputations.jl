@@ -4,6 +4,7 @@ module GroupReputations
     using Distributed
     using Random, StatsBase, Statistics
     using JLD, DataFrames, CSV
+    using Distances
 
     # functions
     include("./module/structs.jl")

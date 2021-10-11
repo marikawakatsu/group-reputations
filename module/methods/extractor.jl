@@ -8,7 +8,7 @@ function extract_data(simulation_title::String)
     !ispath(data) && mkpath(data)
 
     colnames = [:N, :norm, :all_strategies, :num_groups, :group_sizes, :generation,
-                :ind_scale, :grp_scale, :ind_base, :grp_base,
+                :ind_scale, :grp_scale, :ind_recip, :grp_recip, :ind_base, :grp_base,
                 :ind_src_ind, :grp_src_grp, :bias, :prob, :rate, :cost,
                 :agree_ind, :agree_grp, :cooperation, :coop_11, :coop_12, :coop_21, :coop_22,
                 :reps_ind_11, :reps_ind_12, :reps_ind_21, :reps_ind_22,
@@ -42,6 +42,8 @@ function extract_data(simulation_title::String)
                 pop.group_sizes, pop.generation,
                 mean(Int.(pop.ind_reps_scale)),
                 mean(Int.(pop.grp_reps_scale)),
+                mean(Int.(pop.ind_recipient_membership)),
+                mean(Int.(pop.grp_recipient_membership)),
                 mean(Int.(pop.ind_reps_base)),
                 mean(Int.(pop.grp_reps_base)),
                 mean(Int.(pop.ind_reps_src_ind)),
@@ -87,7 +89,7 @@ function extract_data_DISC(simulation_title::String)
     !ispath(data) && mkpath(data)
 
     colnames = [:N, :norm, :all_strategies, :num_groups, :group_sizes, :generation,
-                :ind_scale, :grp_scale, :ind_base, :grp_base,
+                :ind_scale, :grp_scale, :ind_recip, :grp_recip, :ind_base, :grp_base,
                 :ind_src_ind, :grp_src_grp, :bias, :prob, :rate, :cost,
                 :agree_ind, :agree_grp, :cooperation, :coop_11, :coop_12, :coop_21, :coop_22,
                 :reps_ind_11, :reps_ind_12, :reps_ind_21, :reps_ind_22,
@@ -121,6 +123,8 @@ function extract_data_DISC(simulation_title::String)
                 pop.group_sizes, pop.generation,
                 mean(Int.(pop.ind_reps_scale)),
                 mean(Int.(pop.grp_reps_scale)),
+                mean(Int.(pop.ind_recipient_membership)),
+                mean(Int.(pop.grp_recipient_membership)),
                 mean(Int.(pop.ind_reps_base)),
                 mean(Int.(pop.grp_reps_base)),
                 mean(Int.(pop.ind_reps_src_ind)),
