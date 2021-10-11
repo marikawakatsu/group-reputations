@@ -10,7 +10,7 @@ begin
 end
 
 # Fixed parameters
-begin
+@everywhere begin
     # Population size
     const N    = 10
     # Payoff parameters
@@ -27,7 +27,7 @@ begin
 end
 
 # Simulation parameters to sweep
-begin
+@everywhere begin
     # Strategies and groups
     all_strategies = [1,2,3]
     group_sizes = [0.5, 0.5]
@@ -44,11 +44,11 @@ begin
     # Initial generations without averaging
     burn_in = 0
     # Repetitions and length
-    repetitions = 1
+    repetitions = 3
     initial_repetition = 0
-    generations = 10_000
+    generations = 1_000
     # Title
-    simulation_title = "fixed_prob-rate"
+    simulation_title = "test"
 end
 
 

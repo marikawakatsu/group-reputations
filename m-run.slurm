@@ -1,10 +1,10 @@
 #!/bin/bash
 #SBATCH --job-name=groupreps
-#SBATCH --mem=16G
+#SBATCH --mem=32G
 #SBATCH --time=24:00:00
 #SBATCH --mail-type=all
 #SBATCH --mail-user=mk28@princeton.edu
-#SBATCH --array=1-216
+#SBATCH --array=325-648
 #SBATCH --output=out/%A-%a.out
 
 echo "My SLURM_ARRAY_JOB_ID is $SLURM_ARRAY_JOB_ID."
@@ -15,4 +15,4 @@ module purge
 module load julia/1.5.0
 module list
 
-julia rate_all_disc.jl
+julia all_disc.jl
