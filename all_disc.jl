@@ -31,8 +31,8 @@ begin
     ind_reps_scale = [0,1,2]
     grp_reps_scale = [0,1,2]
     # Recipient's membership sampling
-    ind_recipient_membership = [0,1]
-    grp_recipient_membership = [0,1]
+    ind_recipient_membership = [0,1,2]
+    grp_recipient_membership = [0,1,2]
     # Based or not on behavior
     ind_reps_base_values = true # [false,true]
     grp_reps_base_values = true # [false,true]
@@ -68,7 +68,11 @@ begin
                                 ib in [ind_reps_base_values...],
                                 gb in [grp_reps_base_values...],
                                 is in [ind_reps_src_values...],
-                                gs in [grp_reps_src_values...] if !(im==0 && gm==0)][:]
+                                gs in [grp_reps_src_values...]
+                                if  !(im==0 && gm==1) &&
+                                    !(im==1 && gm==0) &&
+                                    !(im==1 && gm==1)
+                                   ][:]
 end
 
 "running simulations..." |> println
