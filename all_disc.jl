@@ -56,9 +56,8 @@ begin
     # Title
     simulation_title = "DISC-scale-prob-recip"
     # Parameters
-    parameters = [ (norm,bias,prob,rate,cost,ir,gr,im,gm,ib,gb,is,gs)
-                            for norm in [social_norms...],
-                                bias in [bias_values...],
+    parameters = [ (bias,prob,rate,cost,ir,gr,im,gm,ib,gb,is,gs)
+                            for bias in [bias_values...],
                                 prob in [prob_values...],
                                 rate in [rate_values...],
                                 cost in [cost_values...],
