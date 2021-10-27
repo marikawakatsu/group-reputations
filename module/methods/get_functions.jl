@@ -62,5 +62,5 @@ end
 function get_agreement_grp(
     pop::Population
     )
-    return mean(1 .- pairwise(Hamming(), pop.reps_grp, dims=1)./pop.M)
+    return mean(1 .- pairwise(Hamming(), pop.reps_grp, dims=1)./pop.num_groups)
 end
