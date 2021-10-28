@@ -181,10 +181,10 @@ function run_simulations(
 
 
     reps = initial_repetition:(initial_repetition+repetitions-1)
-    index = [ (r,norm,bias,prob,rate,cost,ir,gr,im,gm,ib,gb,is,gs) for  r in reps,
+    index = [ (r,norm,bias,rate,cost,ir,gr,im,gm,ib,gb,is,gs) for  r in reps,
                                                 norm in [social_norms...],
                                                 bias in [bias_values...],
-                                                prob in [prob_values...],
+                                                #prob in [prob_values...],
                                                 rate in [rate_values...],
                                                 cost in [cost_values...],
                                                 ir in [ind_reps_scale...],
@@ -195,9 +195,10 @@ function run_simulations(
                                                 gb in [grp_reps_base_values...],
                                                 is in [ind_reps_src_values...],
                                                 gs in [grp_reps_src_values...]][:]
+    prob = prob_values
 
     @sync @distributed for i in index
-        (r,norm,bias,prob,rate,cost,ir,gr,im,gm,ib,gb,is,gs) = i
+        (r,norm,bias,rate,cost,ir,gr,im,gm,ib,gb,is,gs) = i
         # Parameters path
         path  = "results/"*
                 "$simulation_title/"*
