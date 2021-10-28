@@ -29,17 +29,17 @@ begin
     group_sizes = [0.5, 0.5]
     # Reputation type
     ind_reps_scale = [0,1,2]
-    grp_reps_scale = [0,1,2]
+    grp_reps_scale = [1]#0,1,2]
     # Recipient's membership sampling
-    ind_recipient_membership = [0,1,2]
-    grp_recipient_membership = [0,1,2]
+    ind_recipient_membership = [0]#,1,2]
+    grp_recipient_membership = [0]#,1,2]
     # Based or not on behavior
     ind_reps_base_values = true # [false,true]
     grp_reps_base_values = true # [false,true]
     # Probability of interacting with outgroup
     bias_values = 1.0 # 0.0:0.2:1.0
     # Probability of using group reps
-    prob_values = 0.0:0.2:1.0
+    prob_values = [ [0.0,i] for i in 0.0:0.2:1.0 ]
     # Rate of updating reps
     rate_values = 1.0 # 0.0:0.2:1.0
     # Costs of using individual reps
@@ -54,7 +54,7 @@ begin
     initial_repetition = 0
     generations = 50_000
     # Title
-    simulation_title = "DISC-scale-prob-recip"
+    simulation_title = "DISC-multiple-prob"
     # Parameters
     parameters = [ (bias,prob,rate,cost,ir,gr,im,gm,ib,gb,is,gs)
                             for bias in [bias_values...],
@@ -69,10 +69,7 @@ begin
                                 gb in [grp_reps_base_values...],
                                 is in [ind_reps_src_values...],
                                 gs in [grp_reps_src_values...]
-                                if  !(im==0 && gm==1) &&
-                                    !(im==1 && gm==0) &&
-                                    !(im==1 && gm==1)
-                                   ][:]
+                                ][:]
 end
 
 "running simulations..." |> println

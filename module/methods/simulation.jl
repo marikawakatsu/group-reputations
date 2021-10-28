@@ -56,8 +56,8 @@ function random_population(
     cost_values = 0.0,
     ind_reps_scale = 0,      # public
     grp_reps_scale = 0,      # public
-    ind_recipient_membership = 1,   # random
-    grp_recipient_membership = 1,   # random
+    ind_recipient_membership = 0,   # random
+    grp_recipient_membership = 0,   # random
     ind_reps_base_values = true,     # based on behavior
     grp_reps_base_values = true,     # based on behavior
     ind_reps_src_ind_values = true,  # based on ind rep
