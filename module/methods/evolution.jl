@@ -137,6 +137,7 @@ end
 Update Individual Reputations
     If private, every pair.
     If public, broadcast random observer.
+    Implement assumption about reps of in-group and out-group members.
 """
 function update_individual_reputations!(
     pop::Population
@@ -184,12 +185,31 @@ function update_individual_reputations!(
             pop.reps_ind[j,i] = r_ji
         end
     end
+    # Assume good or bad
+    if pop.ind_reps_assume == 1 || pop.ind_reps_assume == 2
+        # assume in-group is bad (1) or good (2)
+        for g in 1:pop.num_groups
+            # Members of group g
+            g_i = (pop.membership .== g) |> findall
+            pop.reps_ind[g_i,g_i] .= pop.ind_reps_assume - 1
+        end
+    elseif pop.ind_reps_assume == 3 || pop.ind_reps_assume == 4
+        # assume out-group is bad (3) or good (4)
+        for g in 1:pop.num_groups
+            # Members of group g
+            g_i = (pop.membership .== g) |> findall
+            # Members of groups other than g
+            g_j = (pop.membership .!= g) |> findall
+            pop.reps_ind[g_i,g_j] .= pop.ind_reps_assume - 3
+        end
+    end
 end
 
 """
 Update Group Reputations
     If private, every individual assess every group.
     If public, broadcast random observer.
+    Implement assumption about grp reps of in-group and out-group members.
 """
 function update_group_reputations!(
     pop::Population
@@ -238,6 +258,26 @@ function update_group_reputations!(
             r = rand() < pop.rates[i] ? r : pop.prev_reps_grp[i,g_j]
             # Update
             pop.reps_grp[i,g_j] = r
+        end
+    end
+    # Assume good or bad
+    if pop.grp_reps_assume == 1 || pop.grp_reps_assume == 2
+        # assume in-group is bad (1) or good (2)
+        for g in 1:pop.num_groups
+            # Members of group g
+            g_i = (pop.membership .== g) |> findall
+            pop.reps_grp[g_i,g] .= pop.grp_reps_assume - 1
+            pop.prev_reps_grp[g_i,g] .= pop.grp_reps_assume - 1
+        end
+    elseif pop.grp_reps_assume == 3 || pop.grp_reps_assume == 4
+        # assume out-group is bad (3) or good (4)
+        for g in 1:pop.num_groups
+            # Members of group g
+            g_i = (pop.membership .== g) |> findall
+            # Members of groups other than g
+            g_j = (pop.all_groups .!= g) |> findall
+            pop.reps_grp[g_i,g_j] .= pop.grp_reps_assume - 3
+            pop.prev_reps_grp[g_i,g_j] .= pop.grp_reps_assume - 3
         end
     end
 end

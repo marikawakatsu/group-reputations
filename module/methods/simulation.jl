@@ -62,13 +62,15 @@ function random_population(
     grp_reps_base_values = true,     # based on behavior
     ind_reps_src_ind_values = true,  # based on ind rep
     grp_reps_src_grp_values = true,  # based on grp rep
+    ind_reps_assume = 0, # don't assume
+    grp_reps_assume = 0, # don't assume
     prob_weights = [0.5, 0.5],
     rate_weights = [0.5, 0.5],
     cost_weights = [0.5, 0.5],
     ind_reps_base_weights = [0.5,0.5],
     grp_reps_base_weights = [0.5,0.5],
     ind_reps_src_ind_weights = [0.5,0.5],
-    grp_reps_src_grp_weights = [0.5,0.5],
+    grp_reps_src_grp_weights = [0.5,0.5]
     )
     # Strategies
     num_strategies      = length(all_strategies)
@@ -122,6 +124,40 @@ function random_population(
             prev_reps_grp[g_i,g_j] .= prev_reps_grp[i,g_j]
         end
     end
+    # Assume good or bad
+    if ind_reps_assume == 1 || ind_reps_assume == 2
+        # assume in-group is bad (1) or good (2)
+        for g in 1:num_groups
+            g_i = (membership .== g) |> findall
+            reps_ind[g_i,g_i] .= ind_reps_assume - 1
+            prev_reps_ind[g_i,g_i] .= ind_reps_assume - 1
+        end
+    elseif ind_reps_assume == 3 || ind_reps_assume == 4
+        # assume out-group is bad (3) or good (4)
+        for g in 1:num_groups
+            g_i = (membership .== g) |> findall
+            g_j = (membership .!= g) |> findall
+            reps_ind[g_i,g_j] .= ind_reps_assume - 3
+            prev_reps_ind[g_i,g_j] .= ind_reps_assume - 3
+        end
+    end
+    # Assume good or bad
+    if grp_reps_assume == 1 || grp_reps_assume == 2
+        # assume in-group is bad (1) or good (2)
+        for g in 1:num_groups
+            g_i = (membership .== g) |> findall
+            reps_grp[g_i,g] .= grp_reps_assume - 1
+            prev_reps_grp[g_i,g] .= grp_reps_assume - 1
+        end
+    elseif grp_reps_assume == 3 || grp_reps_assume == 4
+        # assume out-group is bad (3) or good (4)
+        for g in 1:num_groups
+            g_i = (membership .== g) |> findall
+            g_j = (all_groups .!= g) |> findall
+            reps_grp[g_i,g_j] .= grp_reps_assume - 3
+            prev_reps_grp[g_i,g_j] .= grp_reps_assume - 3
+        end
+    end
     actions             = sample_parameters((N, N))
     interactions        = sample_parameters((N, N))
     fitness             = sample_parameters( N, 0.0)
@@ -133,9 +169,9 @@ function random_population(
         num_strategies, all_strategies,
         num_groups, all_groups, group_sizes,
         ind_reps_scale, ind_reps_base,
-        ind_reps_src_ind, ind_recipient_membership,
+        ind_reps_src_ind, ind_recipient_membership, ind_reps_assume,
         grp_reps_scale, grp_reps_base,
-        grp_reps_src_grp, grp_recipient_membership,
+        grp_reps_src_grp, grp_recipient_membership, grp_reps_assume,
         strategies, membership,
         reps_ind, reps_grp,
         prev_reps_ind, prev_reps_grp,
@@ -175,6 +211,8 @@ function run_simulations(
             grp_reps_base_values = true,
             ind_reps_src_values = true,
             grp_reps_src_values = true,
+            ind_reps_assume = 0,
+            grp_reps_assume = 0,
             burn_in = 5_000,
             report = Inf
         )
@@ -194,11 +232,13 @@ function run_simulations(
                                                 ib in [ind_reps_base_values...],
                                                 gb in [grp_reps_base_values...],
                                                 is in [ind_reps_src_values...],
-                                                gs in [grp_reps_src_values...]][:]
+                                                gs in [grp_reps_src_values...],
+                                                ia in [ind_reps_assume...],
+                                                ga in [grp_reps_assume...]][:]
     prob = prob_values
 
     @sync @distributed for i in index
-        (r,norm,bias,rate,cost,ir,gr,im,gm,ib,gb,is,gs) = i
+        (r,norm,bias,rate,cost,ir,gr,im,gm,ib,gb,is,gs,ia,ga) = i
         # Parameters path
         path  = "results/"*
                 "$simulation_title/"*
@@ -207,6 +247,7 @@ function run_simulations(
                 "recip$(Int(im))$(Int(gm))-"*
                 "base$(Int(ib))$(Int(gb))-"*
                 "src$(Int(is))$(Int(gs))-"*
+                "assume$(Int(ia))$(Int(ga))-"*
                 "bias$bias-prob$prob-rate$rate-cost$cost"
         !ispath(path) && mkpath(path)
         # Files
@@ -218,7 +259,7 @@ function run_simulations(
             game = Game(game_pars...)
             # Get Population
             pop  = random_population( N, game, norm, all_strategies, group_sizes,
-                                    bias, prob, rate, cost, ir, gr, im, gm, ib, gb, is, gs)
+                                    bias, prob, rate, cost, ir, gr, im, gm, ib, gb, is, gs, ia, ga)
             # Burn in generations
             [ evolve!(pop) for _ in burn_in ]
             pop.generation = 0
@@ -254,8 +295,8 @@ function run_simulations(
         sources = ["other","self "]
         recip = ["self","rand","other "]
         ">>  $norm  |  "*
-        "ind : $(types[Int(ir)+1]) - $(bases[Int(ib)+1]) - $(sources[Int(is)+1]) - $(recip[Int(im)+1])  |  "*
-        "grp : $(types[Int(gr)+1]) - $(bases[Int(gb)+1]) - $(sources[Int(gs)+1]) - $(recip[Int(gm)+1])  |  "*
+        "ind : $(types[Int(ir)+1]) - $(bases[Int(ib)+1]) - $(sources[Int(is)+1]) - $(recip[Int(im)+1]) - $(assume[Int(ia)+1])  |  "*
+        "grp : $(types[Int(gr)+1]) - $(bases[Int(gb)+1]) - $(sources[Int(gs)+1]) - $(recip[Int(gm)+1]) - $(assume[Int(ga)+1])  |  "*
         "bias : $bias  |  prob : $prob  |  rate : $rate  |  cost : $cost" |> println
     end
 end

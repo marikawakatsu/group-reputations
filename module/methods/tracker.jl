@@ -112,6 +112,7 @@ function _merge(
     avg_reps_grp       = sum(( (x)-> x.avg_reps_grp*(1+x.final_generation-x.initial_generation) ).( trackers )) / final_generation
     population_path    = first(trackers).population_path
 
+    # POSSIBLE ERROR HERE???
     return Tracker( initial_generation,
                     final_generation,
                     avg_cooperation,
