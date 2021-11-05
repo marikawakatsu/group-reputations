@@ -56,7 +56,7 @@ plot_heatmap_fixed_cost <- function(simdata_sub, norm = "SJ", metric = "cooperat
       space    = "Lab",
       name     = label) +
     labs(x = "Probability of DISC using stereotypes (p)",
-         y = "Probability of group reputation update per round (λ)") +
+         y = "Probability of stereotype update per round (λ)") +
     geom_tile( show.legend = TRUE ) + 
     facet_grid(ind_scale_label ~ grp_scale_label, 
                space="free", scales="free") +
@@ -226,7 +226,7 @@ plot_linegrid_fixed_rate_cost_prob <- function(simdata_sub, norm = "SJ", metric 
 
 plot_linegrid_fixed_cost_prob_bias <- function(simdata_sub, norm = "SJ", metric = "cooperation",
                                                label = "Average\ncooperation", cost = 0.0, prob = 1.0,
-                                               grp_src_grp = 0,  verbose = FALSE){
+                                               grp_src_grp = 0, verbose = FALSE){
   
   subdata <- simdata_sub[simdata_sub$Metric %in% metric &
                            simdata_sub$norm == norm &
@@ -252,7 +252,7 @@ plot_linegrid_fixed_cost_prob_bias <- function(simdata_sub, norm = "SJ", metric 
     geom_errorbar(aes(ymin = Mean - SD, ymax = Mean + SD), width = 0, size = 0.3) +
     geom_line(size = 0.4, alpha = 1) +
     geom_point(size = 1.1, alpha = 1, stroke = 0.5) + #, shape = 21, fill = "white") +
-    labs(x = "Probability of group reputation update per round (λ)",
+    labs(x = "Probability of stereotype update per round (λ)",
          y = settings$ylabel) +
     facet_grid(ind_scale_label ~ grp_scale_label,
                space="free", scales="free") +
@@ -262,6 +262,327 @@ plot_linegrid_fixed_cost_prob_bias <- function(simdata_sub, norm = "SJ", metric 
   
   return(fig)
 }
+
+plot_linegrid_recip <- function(simdata_sub, norm = "SJ", metric = "cooperation", 
+                                label = "Average\ncooperation", rate = 1.0, cost = 0.0,
+                                grp_src_grp = 0, verbose = FALSE){
+  
+  cases <- c("(0,0)", "(0,1)", "(1,0)", "(1,1)")
+  
+  subdata <- simdata_sub[simdata_sub$Metric %in% metric & 
+                           simdata_sub$norm == norm &
+                           simdata_sub$rate == paste0("",rate,"") &
+                           simdata_sub$cost == paste0("",cost,"") &
+                           simdata_sub$grp_src_grp == grp_src_grp &
+                           simdata_sub$recip_label %in% cases, ]
+  
+  if(verbose){print_subdata(subdata)}
+  
+  settings <- lineplot_colors_and_labels(metric)
+  
+  fig <- ggplot(data = subdata,
+                aes(x = prob, y = Mean, color = recip_label, linetype = recip_label, label = recip_label)) +
+    theme_mk() +
+    ggtitle( paste0("norm ", norm, " (rate λ = ", rate, ", cost α = ", cost, ")") ) +
+    scale_x_continuous( breaks = seq(0, 1, 0.2), limits = c(-0.1, 1.1)) +
+    scale_y_continuous( breaks = settings$ybreaks, limits = settings$ylimits) +
+    scale_color_manual( values = settings$colors) +
+    scale_linetype_manual(values = settings$linetypes) +
+    labs(color = label, linetype = label) +
+    geom_errorbar(aes(ymin = Mean - SD, ymax = Mean + SD), width = 0, size = 0.3) +
+    geom_line(size = 0.4, alpha = 1) +
+    geom_point(size = 1.1, alpha = 1, stroke = 0.5) + #, shape = 21, fill = "white") +
+    labs(x = "Probability of DISC using stereotypes (p)",
+         y = settings$ylabel) +
+    facet_grid(ind_scale_label ~ grp_scale_label,
+               space="free", scales="free") +
+    theme(strip.placement = "outside",
+          panel.grid.major = element_line(size = 0.2, colour = "grey95")
+    )
+  
+  return(fig)
+}
+
+plot_linegrid_recip_agree <- function(simdata_sub, norm = "SJ", metric = "cooperation", 
+                                label = "Average\ncooperation", rate = 1.0, cost = 0.0,
+                                grp_src_grp = 0, recip_case = "(0,0)", verbose = FALSE){
+  
+  subdata <- simdata_sub[simdata_sub$Metric %in% metric & 
+                           simdata_sub$norm == norm &
+                           simdata_sub$rate == paste0("",rate,"") &
+                           simdata_sub$cost == paste0("",cost,"") &
+                           simdata_sub$grp_src_grp == grp_src_grp &
+                           simdata_sub$recip_label == recip_case, ]
+  
+  if(verbose){print_subdata(subdata)}
+  
+  settings <- lineplot_colors_and_labels(metric)
+  
+  fig <- ggplot(data = subdata,
+                aes(x = prob, y = Mean, color = Metric, linetype = Metric, label = Metric)) +
+    theme_mk() +
+    ggtitle( paste0("norm ", norm, " (rate λ = ", rate, ", cost α = ", cost, ")") ) +
+    scale_x_continuous( breaks = seq(0, 1, 0.2), limits = c(-0.1, 1.1)) +
+    scale_y_continuous( breaks = settings$ybreaks, limits = settings$ylimits) +
+    scale_color_manual( values = settings$colors) +
+    scale_linetype_manual(values = settings$linetypes) +
+    labs(color = label, linetype = label) +
+    geom_errorbar(aes(ymin = Mean - SD, ymax = Mean + SD), width = 0, size = 0.3) +
+    geom_line(size = 0.4, alpha = 1) +
+    geom_point(size = 1.1, alpha = 1, stroke = 0.5) + #, shape = 21, fill = "white") +
+    labs(x = "Probability of DISC using stereotypes (p)",
+         y = settings$ylabel) +
+    facet_grid(ind_scale_label ~ grp_scale_label,
+               space="free", scales="free") +
+    theme(strip.placement = "outside",
+          panel.grid.major = element_line(size = 0.2, colour = "grey95")
+    )
+  
+  return(fig)
+}
+
+# functions to plot select columns
+plot_linegrid_fixed_rate_cost_select <- function(simdata_sub, norm = "SJ", metric = "cooperation", 
+                                                 label = "Average\ncooperation", rate = 1.0, cost = 0.0,
+                                                 grp_src_grp = 0, verbose = FALSE){
+  
+  subdata <- simdata_sub[simdata_sub$Metric %in% metric & 
+                           simdata_sub$norm == norm &
+                           simdata_sub$rate == paste0("",rate,"") &
+                           simdata_sub$cost == paste0("",cost,"") &
+                           simdata_sub$grp_src_grp == grp_src_grp &
+                           simdata_sub$grp_scale_label == "Stereotypes by group", ]
+  
+  if(verbose){print_subdata(subdata)}
+  
+  settings <- lineplot_colors_and_labels(metric)
+  
+  fig <- ggplot(data = subdata,
+                aes(x = prob, y = Mean, color = Metric, linetype = Metric, label = Metric)) +
+    theme_mk() +
+    ggtitle( paste0("norm ", norm, " (rate λ = ", rate, ", cost α = ", cost, ")") ) +
+    scale_x_continuous( breaks = seq(0, 1, 0.2), limits = c(-0.1, 1.1)) +
+    scale_y_continuous( breaks = settings$ybreaks, limits = settings$ylimits) +
+    scale_color_manual( values = settings$colors) +
+    scale_linetype_manual(values = settings$linetypes) +
+    labs(color = label, linetype = label) +
+    geom_errorbar(aes(ymin = Mean - SD, ymax = Mean + SD), width = 0, size = 0.3) +
+    geom_line(size = 0.4, alpha = 1) +
+    geom_point(size = 1.1, alpha = 1, stroke = 0.5) + #, shape = 21, fill = "white") +
+    labs(x = "Probability of DISC using stereotypes (p)",
+         y = settings$ylabel) +
+    facet_grid(grp_scale_label ~ ind_scale_label,
+               space="free", scales="free") +
+    theme(strip.placement = "outside",
+          panel.grid.major = element_line(size = 0.2, colour = "grey95")
+    )
+  
+  return(fig)
+}
+
+# select a single panel
+plot_linegrid_fixed_rate_cost_select2 <- function(simdata_sub, norm = "SJ", metric = "cooperation", 
+                                                 label = "Average\ncooperation", rate = 1.0, cost = 0.0,
+                                                 grp_src_grp = 0, verbose = FALSE){
+  
+  subdata <- simdata_sub[simdata_sub$Metric %in% metric & 
+                           simdata_sub$norm == norm &
+                           simdata_sub$rate == paste0("",rate,"") &
+                           simdata_sub$cost == paste0("",cost,"") &
+                           simdata_sub$grp_src_grp == grp_src_grp &
+                           simdata_sub$grp_scale_label == "Stereotypes by group" &
+                           simdata_sub$ind_scale_label == "Individual reps private", ]
+  
+  if(verbose){print_subdata(subdata)}
+  
+  settings <- lineplot_colors_and_labels(metric)
+  
+  fig <- ggplot(data = subdata,
+                aes(x = prob, y = Mean, color = Metric, linetype = Metric, label = Metric)) +
+    theme_mk() +
+    ggtitle( paste0("norm ", norm, " (rate λ = ", rate, ", cost α = ", cost, ")") ) +
+    scale_x_continuous( breaks = seq(0, 1, 0.2), limits = c(-0.1, 1.1)) +
+    scale_y_continuous( breaks = settings$ybreaks, limits = settings$ylimits) +
+    scale_color_manual( values = settings$colors) +
+    scale_linetype_manual(values = settings$linetypes) +
+    labs(color = label, linetype = label) +
+    geom_errorbar(aes(ymin = Mean - SD, ymax = Mean + SD), width = 0, size = 0.3) +
+    geom_line(size = 0.4, alpha = 1) +
+    geom_point(size = 1.1, alpha = 1, stroke = 0.5) + #, shape = 21, fill = "white") +
+    labs(x = "Probability of DISC\nusing stereotypes (p)",
+         y = settings$ylabel) +
+    facet_grid(grp_scale_label ~ ind_scale_label,
+               space="free", scales="free") +
+    theme(strip.placement = "outside",
+          panel.grid.major = element_line(size = 0.2, colour = "grey95")
+    )
+  
+  return(fig)
+}
+
+plot_linegrid_recip_select <- function(simdata_sub, norm = "SJ", metric = "cooperation", 
+                                label = "Average\ncooperation", rate = 1.0, cost = 0.0,
+                                grp_src_grp = 0, verbose = FALSE){
+  
+  cases <- c("(0,0)", "(0,1)", "(1,0)", "(1,1)")
+  
+  subdata <- simdata_sub[simdata_sub$Metric %in% metric & 
+                           simdata_sub$norm == norm &
+                           simdata_sub$rate == paste0("",rate,"") &
+                           simdata_sub$cost == paste0("",cost,"") &
+                           simdata_sub$grp_src_grp == grp_src_grp &
+                           simdata_sub$grp_scale_label == "Stereotypes by group" &
+                           simdata_sub$ind_scale_label == "Individual reps by group" &
+                           simdata_sub$recip_label %in% cases, ]
+  
+  if(verbose){print_subdata(subdata)}
+  
+  settings <- lineplot_colors_and_labels(metric)
+  
+  fig <- ggplot(data = subdata,
+                aes(x = prob, y = Mean, color = recip_label, linetype = recip_label, label = recip_label)) +
+    theme_mk() +
+    ggtitle( paste0("norm ", norm, " (rate λ = ", rate, ", cost α = ", cost, ")") ) +
+    scale_x_continuous( breaks = seq(0, 1, 0.2), limits = c(-0.1, 1.1)) +
+    scale_y_continuous( breaks = settings$ybreaks, limits = settings$ylimits) +
+    scale_color_manual( values = settings$colors) +
+    scale_linetype_manual(values = settings$linetypes) +
+    labs(color = label, linetype = label) +
+    geom_errorbar(aes(ymin = Mean - SD, ymax = Mean + SD), width = 0, size = 0.3) +
+    geom_line(size = 0.4, alpha = 1) +
+    geom_point(size = 1.1, alpha = 1, stroke = 0.5) + #, shape = 21, fill = "white") +
+    labs(x = "Probability of DISC\nusing stereotypes (p)",
+         y = settings$ylabel) +
+    facet_grid(grp_scale_label ~ ind_scale_label,
+               space="free", scales="free") +
+    theme(strip.placement = "outside",
+          panel.grid.major = element_line(size = 0.2, colour = "grey95")
+    )
+  
+  return(fig)
+}
+
+plot_linegrid_fixed_rate_cost_prob_select <- function(simdata_sub, norm = "SJ", metric = "cooperation",
+                                                      label = "Average\ncooperation", rate = 1.0, cost = 0.0, prob = 1.0,
+                                                      grp_src_grp = 0,  verbose = FALSE){
+  
+  print(rate)
+  subdata <- simdata_sub[simdata_sub$Metric %in% metric &
+                           simdata_sub$norm == norm &
+                           simdata_sub$rate == paste0("",rate,"") &
+                           simdata_sub$cost == paste0("",cost,"") &
+                           simdata_sub$prob == paste0("",prob,"") &
+                           simdata_sub$grp_src_grp == grp_src_grp &
+                           simdata_sub$grp_scale_label == "Stereotypes by group" &
+                           simdata_sub$ind_scale_label == "Individual reps by group", ]
+  
+  if(verbose){print_subdata(subdata)}
+  
+  settings <- lineplot_colors_and_labels(metric)
+  
+  fig <- ggplot(data = subdata,
+                aes(x = bias, y = Mean, color = Metric, linetype = Metric, label = Metric)) +
+    theme_mk() +
+    ggtitle( paste0("norm ", norm, " (rate λ = ", rate, ", prob p = ", prob, ")") ) +
+    scale_x_continuous( breaks = seq(0, 1, 0.2), limits = c(-0.1, 1.1)) +
+    scale_y_continuous( breaks = settings$ybreaks, limits = settings$ylimits) +
+    scale_color_manual( values = settings$colors) +
+    scale_linetype_manual(values = settings$linetypes) +
+    labs(color = label, linetype = label) +
+    geom_errorbar(aes(ymin = Mean - SD, ymax = Mean + SD), width = 0, size = 0.3) +
+    geom_line(size = 0.4, alpha = 1) +
+    geom_point(size = 1.1, alpha = 1, stroke = 0.5) + #, shape = 21, fill = "white") +
+    labs(x = "Probability of interacting with\nout-group members (out_bias)",
+         y = settings$ylabel) +
+    facet_grid(grp_scale_label ~ ind_scale_label,
+               space="free", scales="free") +
+    theme(strip.placement = "outside",
+          panel.grid.major = element_line(size = 0.2, colour = "grey95")
+    )
+  
+  return(fig)
+}
+
+plot_linegrid_fixed_cost_prob_bias_select <- function(simdata_sub, norm = "SJ", metric = "cooperation",
+                                               label = "Average\ncooperation", cost = 0.0, prob = 1.0,
+                                               grp_src_grp = 0, verbose = FALSE){
+  
+  subdata <- simdata_sub[simdata_sub$Metric %in% metric &
+                           simdata_sub$norm == norm &
+                           simdata_sub$cost == paste0("",cost,"") &
+                           simdata_sub$prob == paste0("",prob,"") &
+                           simdata_sub$grp_src_grp == grp_src_grp &
+                           simdata_sub$grp_scale_label == "Stereotypes by group" &
+                           simdata_sub$ind_scale_label == "Individual reps by group", ]
+  
+  if("bias" %in% colnames(subdata)){warning("check bias parameters")}
+  
+  if(verbose){print_subdata(subdata)}
+  
+  settings <- lineplot_colors_and_labels(metric)
+  
+  fig <- ggplot(data = subdata,
+                aes(x = rate, y = Mean, color = Metric, linetype = Metric, label = Metric)) +
+    theme_mk() +
+    ggtitle( paste0("norm ", norm, " (cost α = ", cost, ", prob p = ", prob, ")") ) +
+    scale_x_continuous( breaks = seq(0, 1, 0.2), limits = c(-0.1, 1.1)) +
+    scale_y_continuous( breaks = settings$ybreaks, limits = settings$ylimits) +
+    scale_color_manual( values = settings$colors) +
+    scale_linetype_manual(values = settings$linetypes) +
+    labs(color = label, linetype = label) +
+    geom_errorbar(aes(ymin = Mean - SD, ymax = Mean + SD), width = 0, size = 0.3) +
+    geom_line(size = 0.4, alpha = 1) +
+    geom_point(size = 1.1, alpha = 1, stroke = 0.5) + #, shape = 21, fill = "white") +
+    labs(x = "Probability of stereotype\nupdate per round (λ)",
+         y = settings$ylabel) +
+    facet_grid(grp_scale_label ~ ind_scale_label,
+               space="free", scales="free") +
+    theme(strip.placement = "outside",
+          panel.grid.major = element_line(size = 0.2, colour = "grey95")
+    )
+  
+  return(fig)
+}
+
+plot_linegrid_recip_agree_select <- function(simdata_sub, norm = "SJ", metric = "cooperation", 
+                                      label = "Average\ncooperation", rate = 1.0, cost = 0.0,
+                                      grp_src_grp = 0, recip_case = "(0,0)", verbose = FALSE){
+  
+  subdata <- simdata_sub[simdata_sub$Metric %in% metric & 
+                           simdata_sub$norm == norm &
+                           simdata_sub$rate == paste0("",rate,"") &
+                           simdata_sub$cost == paste0("",cost,"") &
+                           simdata_sub$grp_src_grp == grp_src_grp &
+                           simdata_sub$recip_label == recip_case & 
+                           simdata_sub$grp_scale_label == "Stereotypes by group", ]
+  
+  if(verbose){print_subdata(subdata)}
+  
+  settings <- lineplot_colors_and_labels(metric)
+  
+  fig <- ggplot(data = subdata,
+                aes(x = prob, y = Mean, color = Metric, linetype = Metric, label = Metric)) +
+    theme_mk() +
+    ggtitle( paste0("norm ", norm, " (rate λ = ", rate, ", cost α = ", cost, ")") ) +
+    scale_x_continuous( breaks = seq(0, 1, 0.2), limits = c(-0.1, 1.1)) +
+    scale_y_continuous( breaks = settings$ybreaks, limits = settings$ylimits) +
+    scale_color_manual( values = settings$colors) +
+    scale_linetype_manual(values = settings$linetypes) +
+    labs(color = label, linetype = label) +
+    geom_errorbar(aes(ymin = Mean - SD, ymax = Mean + SD), width = 0, size = 0.3) +
+    geom_line(size = 0.4, alpha = 1) +
+    geom_point(size = 1.1, alpha = 1, stroke = 0.5) + #, shape = 21, fill = "white") +
+    labs(x = "Probability of DISC using stereotypes (p)",
+         y = settings$ylabel) +
+    facet_grid(grp_scale_label ~ ind_scale_label,
+               space="free", scales="free") +
+    theme(strip.placement = "outside",
+          panel.grid.major = element_line(size = 0.2, colour = "grey95")
+    )
+  
+  return(fig)
+}
+
 ################
 # PLOT LINES
 ################

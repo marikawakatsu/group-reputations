@@ -42,13 +42,13 @@ lineplot_colors_and_labels <- function(metric){
     linetypes = c("solid", "dotted", "dotted", "solid")
     ybreaks   = seq(0, 1, 0.2)
     ylimits   = c(0, 1)
-    ylabel    = "Frequency"
+    ylabel    = "Cooperation level"
   }else if( "reps_ind_11" %in% metric || "reps_grp_11" %in% metric ){
     colors    = c("#810f7c", "#810f7c", "#8c96c6", "#8c96c6") # magma(6)[2:5]
     linetypes = c("solid", "dotted", "dotted", "solid")
     ybreaks   = seq(0, 1, 0.2)
     ylimits   = c(0, 1)
-    ylabel    = "Frequency"
+    ylabel    = "Fraction Good"
   }else if( "freq1_ALLC" %in% metric){
     colors = c("#377eb8","#e41a1c","#ff7f00","#377eb8","#e41a1c","#ff7f00")
     linetypes = c("solid", "solid", "solid", "dotted", "dotted", "dotted")
@@ -61,6 +61,18 @@ lineplot_colors_and_labels <- function(metric){
     ybreaks   = seq(-0.8, 0.8, 0.2)
     ylimits   = c(-.25, .85)
     ylabel    = "Fitness"
+  }else if( "cooperation" %in% metric){
+    colors    = viridis(6)[2:5]
+    linetypes = c("solid", "solid", "solid", "solid")
+    ybreaks   = seq(0, 1, 0.2)
+    ylimits   = c(0, 1)
+    ylabel    = "Cooperation level"
+  }else if( "agree_ind" %in% metric){
+    colors    = c("#810f7c", "#8c96c6")
+    linetypes = c("solid", "solid")
+    ybreaks   = seq(0, 1, 0.2)
+    ylimits   = c(0, 1)
+    ylabel    = "Agreement"
   }
   
   return( list(colors=colors, linetypes=linetypes, ybreaks=ybreaks, ylimits=ylimits, ylabel=ylabel) )
