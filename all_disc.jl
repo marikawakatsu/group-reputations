@@ -47,6 +47,9 @@ begin
     # Based or not on temselves
     ind_reps_src_values = true # [false,true]
     grp_reps_src_values = true # [false,true]
+    # Make assumptions about reputations
+    ind_reps_src_values = [0]
+    grp_reps_src_values = [0,1,2,3,4]
     # Initial generations without averaging
     burn_in = 5_000
     # Repetitions and length
@@ -68,7 +71,9 @@ begin
                                 ib in [ind_reps_base_values...],
                                 gb in [grp_reps_base_values...],
                                 is in [ind_reps_src_values...],
-                                gs in [grp_reps_src_values...]
+                                gs in [grp_reps_src_values...],
+                                ia in [ind_reps_assume...],
+                                ga in [grp_reps_assume...]
                                 ][:]
 end
 
