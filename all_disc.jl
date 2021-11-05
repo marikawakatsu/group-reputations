@@ -1,6 +1,7 @@
 "loading module..." |> println
 (@__DIR__) == pwd() || cd(@__DIR__)
 any(LOAD_PATH .== pwd()) || push!(LOAD_PATH, pwd())
+
 begin
     using GroupReputations
     const id = parse(Int64, ENV["SLURM_ARRAY_TASK_ID"])
@@ -48,8 +49,8 @@ begin
     ind_reps_src_values = true # [false,true]
     grp_reps_src_values = true # [false,true]
     # Make assumptions about reputations
-    ind_reps_src_values = [0]
-    grp_reps_src_values = [0,1,2,3,4]
+    ind_reps_assume = [0]
+    grp_reps_assume = [0,1,2,3,4]
     # Initial generations without averaging
     burn_in = 5_000
     # Repetitions and length
@@ -57,9 +58,9 @@ begin
     initial_repetition = 0
     generations = 50_000
     # Title
-    simulation_title = "DISC-multiple-prob"
+    simulation_title = "DISC-assume" # "DISC-multiple-prob"
     # Parameters
-    parameters = [ (bias,prob,rate,cost,ir,gr,im,gm,ib,gb,is,gs)
+    parameters = [ (bias,prob,rate,cost,ir,gr,im,gm,ib,gb,is,gs,ia,ga)
                             for bias in [bias_values...],
                                 prob in [prob_values...],
                                 rate in [rate_values...],

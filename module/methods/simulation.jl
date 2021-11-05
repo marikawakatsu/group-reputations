@@ -219,7 +219,7 @@ function run_simulations(
 
 
     reps = initial_repetition:(initial_repetition+repetitions-1)
-    index = [ (r,norm,bias,rate,cost,ir,gr,im,gm,ib,gb,is,gs) for  r in reps,
+    index = [ (r,norm,bias,rate,cost,ir,gr,im,gm,ib,gb,is,gs,ia,ga) for  r in reps,
                                                 norm in [social_norms...],
                                                 bias in [bias_values...],
                                                 #prob in [prob_values...],
@@ -294,6 +294,7 @@ function run_simulations(
         bases = ["random  ","behavior"]
         sources = ["other","self "]
         recip = ["self","rand","other "]
+        assume = ["no assumption","in-group bad","in-group good","out-group bad","out-group good"]
         ">>  $norm  |  "*
         "ind : $(types[Int(ir)+1]) - $(bases[Int(ib)+1]) - $(sources[Int(is)+1]) - $(recip[Int(im)+1]) - $(assume[Int(ia)+1])  |  "*
         "grp : $(types[Int(gr)+1]) - $(bases[Int(gb)+1]) - $(sources[Int(gs)+1]) - $(recip[Int(gm)+1]) - $(assume[Int(ga)+1])  |  "*
