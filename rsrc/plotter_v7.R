@@ -1,7 +1,7 @@
 ################################################################################
 #
 # Script for basic plots
-# Plot data from "DISC-scale-prob-recip"
+# Plot data from "DISC-assume"
 # 
 ################################################################################
 
@@ -15,36 +15,40 @@ source("rsrc/utils/__utils__.R")
 ########################
 # path to the data directory
 data_dir     <- "~/Dropbox (Princeton)/Stereotypes_results/group-reputations/"
+data_dir     <- "~/Documents/GitHub/group-reputations/data/"
 
 # load and merge data
-data_sub_dir <- "DISC-scale-prob-recip"
-tag          <- "_DISC_recip"
-simdata_m <- read.csv( paste0(data_dir, data_sub_dir, "/", "m_data", tag, ".csv"), header = TRUE)
-simdata   <- simdata_m
-# simdata_s <- read.csv( paste0(data_dir, data_sub_dir, "/", "s_data", tag, ".csv"), header = TRUE)
-# simdata   <- rbind(simdata_m, simdata_s)
+data_sub_dir <- "DISC-assume"
+tag          <- "_DISC_assume"
+simdata_m    <- read.csv( paste0(data_dir, data_sub_dir, "/", "m_data", tag, ".csv"), header = TRUE)
+simdata      <- simdata_m
+# simdata_s  <- read.csv( paste0(data_dir, data_sub_dir, "/", "s_data", tag, ".csv"), header = TRUE)
+# simdata    <- rbind(simdata_m, simdata_s)
 
-casecount <- casecounter(simdata)
+casecount    <- casecounter(simdata)
 
 ##########################
 # PREP DATA FOR PLOTTING
 ##########################
 # see rsrc/utils/processing_functions.R for measuring variables
 # select columns
-id_vars         <- c("N","norm","all_strategies","num_groups","group_sizes","generation",
-                     "ind_scale","grp_scale","ind_recip","grp_recip","ind_base","grp_base","ind_src_ind","grp_src_grp","prob","rate","cost")
+# id_vars         <- c("N","norm","all_strategies","num_groups","group_sizes","generation",
+#                      "ind_scale","grp_scale","ind_recip","grp_recip","ind_base","grp_base","ind_src_ind","grp_src_grp","prob","rate","cost")
+id_vars <- colnames(simdata)[1:which(colnames(simdata) == "cost")]
 
 # select columns
 simdata_bymeasure <- simdata %>% 
   gather("variable","value",-N,-norm,-all_strategies,-num_groups,-group_sizes,-generation,
-         -ind_scale,-grp_scale,-ind_recip,-grp_recip,-ind_base,-grp_base,-ind_src_ind,-grp_src_grp,-prob,-rate,-cost)
+         -ind_scale,-grp_scale,-ind_recip,-grp_recip,-ind_base,-grp_base,-ind_src_ind,-grp_src_grp,-ind_assume,-grp_assume,
+         -bias,-prob,-rate,-cost)
 simdata_bymeasure$value = as.numeric(simdata_bymeasure$value)
 
 # compute means and vars
 compute_mean_vars <- function( simdata_bymeasure, variables ){
   simdata_mean <- simdata_bymeasure[which(simdata_bymeasure$variable %in% variables),] %>%
     rename( Fraction = value, Metric = variable ) %>%
-    group_by( N, norm, ind_scale, grp_scale, ind_recip, grp_recip, ind_base, grp_base, ind_src_ind, grp_src_grp, prob, rate, cost, Metric ) %>%
+    group_by( N, norm, ind_scale, grp_scale, ind_recip, grp_recip, ind_base, grp_base, ind_src_ind, grp_src_grp, 
+              ind_assume, grp_assume, bias, prob, rate, cost, Metric ) %>%
     summarise(
       Mean = mean(Fraction),
       SD = sd(Fraction),
@@ -75,6 +79,20 @@ compute_mean_vars <- function( simdata_bymeasure, variables ){
   simdata_mean <- simdata_mean %>% mutate( recip_label = paste0( "(", ind_recip, ",", grp_recip, ")" ) )
   simdata_mean$recip_label <- factor(simdata_mean$recip_label, 
                                      levels = c("(0,0)", "(0,1)", "(1,0)", "(1,1)", "(0,2)", "(2,0)", "(1,2)", "(2,1)", "(2,2)"))
+  
+  # new 11/08/21
+  simdata_mean$ind_assume_label[simdata_mean$ind_assume == 0] <- "No assumption"
+  simdata_mean$ind_assume_label[simdata_mean$ind_assume == 1] <- "Assume in-group reps = bad"
+  simdata_mean$ind_assume_label[simdata_mean$ind_assume == 2] <- "Assume in-group reps = good"
+  simdata_mean$ind_assume_label[simdata_mean$ind_assume == 3] <- "Assume out-group reps = bad"
+  simdata_mean$ind_assume_label[simdata_mean$ind_assume == 4] <- "Assume out-group reps = good"
+  simdata_mean$grp_assume_label[simdata_mean$grp_assume == 0] <- "No assumption"
+  simdata_mean$grp_assume_label[simdata_mean$grp_assume == 1] <- "Assume in-group stereo = bad"
+  simdata_mean$grp_assume_label[simdata_mean$grp_assume == 2] <- "Assume in-group stereo = good"
+  simdata_mean$grp_assume_label[simdata_mean$grp_assume == 3] <- "Assume out-group stereo = bad"
+  simdata_mean$grp_assume_label[simdata_mean$grp_assume == 4] <- "Assume out-group stereo = good"
+  # simdata_mean$ind_assume_label <- factor(simdata_mean$ind_assume_label, 
+  #                                    levels = c("(0,0)", "(0,1)", "(1,0)", "(1,1)", "(0,2)", "(2,0)", "(1,2)", "(2,1)", "(2,2)"))
   
   # only for reputations
   # simdata_mean$acting_group[simdata_mean$Metric %in% c("reps_ind_11", "reps_ind_12", "reps_grp_11", "reps_grp_12")] <- "Group 1"

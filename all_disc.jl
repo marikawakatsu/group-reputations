@@ -5,7 +5,7 @@ any(LOAD_PATH .== pwd()) || push!(LOAD_PATH, pwd())
 begin
     using GroupReputations
     const id = parse(Int64, ENV["SLURM_ARRAY_TASK_ID"])
-
+    
     #Fixed parameters
     # Population size
     const N    = 50
@@ -40,7 +40,8 @@ begin
     # Probability of interacting with outgroup
     bias_values = 1.0 # 0.0:0.2:1.0
     # Probability of using group reps
-    prob_values = [ [0.0,i] for i in 0.0:0.2:1.0 ]
+    # prob_values = [ [0.0,i] for i in 0.0:0.2:1.0 ]
+    prob_values = 0.0:0.2:1.0
     # Rate of updating reps
     rate_values = 1.0 # 0.0:0.2:1.0
     # Costs of using individual reps
