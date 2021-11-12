@@ -4,8 +4,7 @@ any(LOAD_PATH .== pwd()) || push!(LOAD_PATH, pwd())
 
 begin
     using GroupReputations
-    # const id = parse(Int64, ENV["SLURM_ARRAY_TASK_ID"])
-    const id = 1
+    const id = parse(Int64, ENV["SLURM_ARRAY_TASK_ID"])
     
     #Fixed parameters
     # Population size
