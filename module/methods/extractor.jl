@@ -69,7 +69,7 @@ function extract_data(simulation_title::String)
                 tracker.avg_fitness[1,1], tracker.avg_fitness[1,2], tracker.avg_fitness[1,3],
                 tracker.avg_fitness[2,1], tracker.avg_fitness[2,2], tracker.avg_fitness[2,3]
             ]
-            println("Hello5")
+            #println("Hello5")
         end
         save(results_file,"results",results)
     end
