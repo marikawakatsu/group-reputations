@@ -250,16 +250,22 @@ plotUpDown[data_,xmin_,xmax_,ymin_,ymax_,Atype_,Btype_,xlabel_:"b/c"]:=Module[{d
   pUp=ListPlot[dataUp,PlotMarkers->Style[\[FilledCircle],Purple,5],PlotRange->{{xmin,xmax},{ymin-0.01,ymax+0.01}}];
   pDown=ListPlot[dataDown,PlotMarkers->Style[\[EmptyCircle],Gray,5],PlotRange->{{xmin,xmax},{ymin-0.01,ymax+0.01}}];
   *)
-  pUp=ListPlot[dataUp,PlotMarkers->{Graphics[{Purple, Disk[{0, 0}]}], 0.02},PlotRange->{{xmin,xmax},{ymin-0.01,ymax+0.01}}];
-  pDown=ListPlot[dataDown,PlotMarkers->{Graphics[{Gray, Thickness[Small], Circle[{0, 0}]}], 0.02},PlotRange->{{xmin,xmax},{ymin-0.01,ymax+0.01}}];
+  pUp = ListPlot[dataUp,
+    PlotMarkers->{Graphics[{Purple, Disk[{0, 0}]}], 0.02},
+    PlotRange->{{xmin-0.01,xmax+0.01},{ymin-0.01,ymax+0.01}}
+    ];
+  pDown = ListPlot[dataDown,
+    PlotMarkers->{Graphics[{Gray, Thickness[Small], Circle[{0, 0}]}], 0.02},
+    PlotRange->{{xmin-0.01,xmax+0.01},{ymin-0.01,ymax+0.01}}
+    ];
   Show[{pUp,pDown},
-  PlotRange->{Automatic,{ymin-0.11,ymax+0.01}},
-  AxesOrigin->{Automatic,-0.1},
-  AxesLabel->{Style[xlabel,Black],Style["\!\(\*SuperscriptBox[\(p\), \(*\)]\)",Black]},
-  AspectRatio->1,
-  ImageSize->{200,200},
-  PlotLabel->Style["Reputations "<>types[[Atype+1]]<>"\nStereotypes "<>types[[Btype+1]],Black]
-  ]
+    PlotRange->{Automatic,{ymin-0.11,ymax+0.01}},
+    AxesOrigin->{Automatic,-0.1},
+    AxesLabel->{Style[xlabel,Black],Style["\!\(\*SuperscriptBox[\(p\), \(*\)]\)",Black]},
+    AspectRatio->1,
+    ImageSize->{200,200},
+    PlotLabel->Style["Reputations "<>types[[Atype+1]]<>"\nStereotypes "<>types[[Btype+1]],Black]
+    ]
 ]
 
 singulartablebc[nu_,up_,ua_,a_,c_,Atype_,Btype_,pRmin_:0.,pRmax_:1.,pRintervals_:10,bmin_:1.,bmax_:3.,bstep_:0.04,tol_:10^-10,iter_:100,stepbystep_:False]:=Module[{ff,sols,data},
@@ -342,7 +348,7 @@ CreateDirectory[directory];
 AbsoluteTiming[
   
   (* setup for all cases *)
-  ppRmin = 0.; ppRmax = 1.; ppRintervals = 10;
+  ppRmin = 0.; ppRmax = 1.; ppRintervals = 25;
   ttol=10^-10;iiter=100;sstepbystep=False;
 
   (* sweep b *)
