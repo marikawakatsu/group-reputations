@@ -29,21 +29,21 @@ mutable struct Population
     num_strategies::Int64               # number of strategies
     all_strategies::Array{Int64, 1}     # array of allowed strategies
     # Groups
-    num_groups::Int64                   # number of groups
+    num_groups::Int64                   # number of groups                      #NOTE: explore all
     all_groups::Array{Int64, 1}         # array of allowed groups
-    group_sizes::Array{Float64, 1}      # array of relative group sizes
+    group_sizes::Array{Float64, 1}      # array of relative group sizes         #NOTE: ternary plots, simulations
     # Individual reputations
     ind_reps_scale::Int32               # individual reputation type: public or private
-    ind_reps_base::Array{Bool, 1}       # individuals reps are based on behavior (1) or not (0)
-    ind_reps_src_ind::Array{Bool, 1}    # update individual reps based on individual (1) or group (0) reputation
-    ind_recipient_membership::Int32     # select recipient by membership with respect to observer (0) random, (1) same group, (2) different group
-    ind_reps_assume::Int32              # assume in-group individuals are bad (1) or good (2), or assume out-group individuals are bad (3) or good (4); don't assume anything if 0  
+    ind_reps_base::Array{Bool, 1}       # individuals reps are based on behavior (1) or not (0) #NOTE: always 1
+    ind_reps_src_ind::Array{Bool, 1}    # update individual reps based on individual (1) or group (0) reputation #NOTE: always 1
+    ind_recipient_membership::Int32     # select recipient by membership with respect to observer (0) random, (1) same group, (2) different group #NOTE: forget
+    ind_reps_assume::Int32              # assume in-group individuals are bad (1) or good (2), or assume out-group individuals are bad (3) or good (4); don't assume anything if 0  #NOTE: forget
     # Group reputations
     grp_reps_scale::Int32               # group reputation type: public or private
     grp_reps_base::Array{Bool, 1}       # group reps are based on behavior (1) or not (0)
     grp_reps_src_grp::Array{Bool, 1}    # update group reps based on individual (0) or group (1) reputation
     grp_recipient_membership::Int32     # select recipient by membership with respect to observer (0) random, (1) same group, (2) different group
-    grp_reps_assume::Int32             # assume in-group group reps are bad (1) or good (2), or assume out-group group reps are bad (3) or good (4); don't assume anything if 0  
+    grp_reps_assume::Int32             # assume in-group group reps are bad (1) or good (2), or assume out-group group reps are bad (3) or good (4); don't assume anything if 0
     # Storage
     strategies::Array{Int64, 1}         # array of strategies
     membership::Array{Int64, 1}         # array of group memberships
@@ -55,9 +55,9 @@ mutable struct Population
     actions::Array{Int64, 2}            # matrix of actions
     interactions::Array{Float64, 2}     # matrix of interactions of last generation
     out_bias::Float64                   # interaction bias towards out-group memebers
-    probs::Array{Float64, 1}            # array of probs of acting using group reps
-    rates::Array{Float64, 1}            # array of rates of updating group reps
-    costs::Array{Float64, 1}            # array of costs of using individual reps
+    probs::Array{Float64, 1}            # array of probs of acting using group reps     #NOTE: MAIN
+    rates::Array{Float64, 1}            # array of rates of updating group reps         #NOTE: fixed usually
+    costs::Array{Float64, 1}            # array of costs of using individual reps       #NOTE: CHECK!
     # Current generation
     generation::Int64
 end

@@ -332,6 +332,8 @@ function update_actions_and_fitness!(
     end
 end
 
+
+#TODO: mix this
 """
 Update Strategies
 """
@@ -362,11 +364,11 @@ Generation of evolutionary process
 function evolve!(
     pop::Population
     )
-    mutate!(pop)
     update_actions_and_fitness!(pop)
     update_individual_reputations!(pop)
     update_group_reputations!(pop)
     update_strategies!(pop)
+    mutate!(pop)
 
     pop.generation += 1
 end

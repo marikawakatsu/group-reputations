@@ -34,3 +34,5 @@ data/
 .RData
 .Ruserdata
 .Rproj.user
+
+*.nb
