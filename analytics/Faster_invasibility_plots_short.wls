@@ -182,7 +182,7 @@ canZQinvadeZR[pQQ_, pRR_,uaa_,upp_,Atype_,Btype_,nu1_,a_,b_,c_]:=Module[{A11,A12
 ]
 
 (* Clear[secantmethod,secantmethodbyinterval]; *)
-secantmethod[f_,x0_,x1_,tol_:10^-10,iter_:50,stepbystep_:False]:=Module[{fx0,fx1,fx2,xx0,xx1,xx2,dir},
+secantmethod[f_,x0_,x1_,tol_:10^-10,iter_:50,stepbystep_:False]:=Module[{fx0,fx1,fx2,xx0,xx1,xx2,dir,i},
   xx0=x0;
   xx1=x1;
   fx0=N@Evaluate[f[xx0]];
@@ -230,7 +230,7 @@ secantmethodbyinterval[f_,xmin_:0.,xmax_:1.,xintervals_:10,tol_:10^-10,iter_:50,
   sol=secantmethod[f,breaks[[j]],breaks[[j+1]],tol,iter,stepbystep];
   sollist=AppendTo[sollist,sol];
   {breaks[[j]],breaks[[j+1]],sol},
-  {j,1,xintervals}
+  {j,1,xintervals+2}
   ];
   If[stepbystep==True,Print[soltable//MatrixForm]];
   sollist=Chop[Cases[sollist,{_?NumericQ,_}],tol*10];
@@ -252,18 +252,18 @@ plotUpDown[data_,xmin_,xmax_,ymin_,ymax_,Atype_,Btype_,xlabel_:"b/c"]:=Module[{d
   *)
   pUp = ListPlot[dataUp,
     PlotMarkers->{Graphics[{Purple, Disk[{0, 0}]}], 0.02},
-    PlotRange->{{xmin-0.01,xmax+0.01},{ymin-0.01,ymax+0.01}}
+    PlotRange->{{xmin-0.05,xmax+0.05},{ymin-0.01,ymax+0.01}}
     ];
   pDown = ListPlot[dataDown,
     PlotMarkers->{Graphics[{Gray, Thickness[Small], Circle[{0, 0}]}], 0.02},
-    PlotRange->{{xmin-0.01,xmax+0.01},{ymin-0.01,ymax+0.01}}
+    PlotRange->{{xmin-0.05,xmax+0.05},{ymin-0.01,ymax+0.01}}
     ];
   Show[{pUp,pDown},
     PlotRange->{Automatic,{ymin-0.11,ymax+0.01}},
     AxesOrigin->{Automatic,-0.1},
     AxesLabel->{Style[xlabel,Black],Style["\!\(\*SuperscriptBox[\(p\), \(*\)]\)",Black]},
     AspectRatio->1,
-    ImageSize->{200,200},
+    ImageSize->{150,150},
     PlotLabel->Style["Reputations "<>types[[Atype+1]]<>"\nStereotypes "<>types[[Btype+1]],Black]
     ]
 ]
@@ -348,13 +348,13 @@ CreateDirectory[directory];
 AbsoluteTiming[
   
   (* setup for all cases *)
-  ppRmin = 0.; ppRmax = 1.; ppRintervals = 25;
-  ttol=10^-10;iiter=100;sstepbystep=False;
+  ppRmin = 0.; ppRmax = 1.; ppRintervals = 20;
+  ttol=10^-10; iiter=100; sstepbystep=False;
 
   (* sweep b *)
-  nuval=0.5;upval=.02;uaval=.02;
-  aval=.3;cval=1.;bval=2;
-  bbmin=1.;bbmax=3.;bbstep=0.05;
+  nuval = 0.5; upval = .02; uaval = .02;
+  aval = .3; cval = 1.; bval = 2;
+  bbmin = 1.; bbmax = 3.; bbstep = 0.05;
 
   {time,results} = singularbcsweep[nuval, upval, uaval, aval, cval, ppRmin, ppRmax, ppRintervals, bbmin, bbmax, bbstep, ttol, iiter, sstepbystep]//AbsoluteTiming;
   Print["Done in : ",time," seconds"];
@@ -362,8 +362,8 @@ AbsoluteTiming[
 
   (* sweep a *)
   nuval = 0.5; upval = .02; uaval = .02;
-  (*aval=.3;*)cval = 1.; bval = 2;
-  aamin = 0.01; aamax = 1.; aastep = 0.025;
+  (*aval=.3;*) cval = 1.; bval = 2;
+  aamin = 0.01; aamax = 1.; aastep = 0.02;
 
   {time,results} = singularasweep[nuval, upval, uaval, bval, cval, ppRmin, ppRmax, ppRintervals, aamin, aamax, aastep, ttol, iiter, sstepbystep]//AbsoluteTiming;
   Print["Done in : ",time," seconds"];
