@@ -34,6 +34,8 @@ data/
 .RData
 .Ruserdata
 .Rproj.user
+.RDataTmp
 
 
 #*.nb
+.DS_Store
